@@ -1,5 +1,4 @@
 import express from 'express'
-import { execFile } from 'child_process'
 import exiftool from 'node-exiftool'
 import exiftoolBin from 'dist-exiftool'
 import multer from 'multer'
@@ -14,7 +13,7 @@ const PORT = process.env.PORT ?? 3001
 const app = express()
 const upload = multer({ dest: 'temp/' })
 
-// app.use(cors())
+app.use(cors())
 
 app.post('/upload', upload.single('file'), (req, res, next) => {
   try {
@@ -23,7 +22,10 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
       const exiftoolProcessReading1 = new exiftool.ExiftoolProcess(exiftoolBin)
       const exiftoolProcessReading2 = new exiftool.ExiftoolProcess(exiftoolBin)
 
-      const responseData = {}
+      const responseData = {
+        before: {},
+        after: {},
+      }
 
       /**
        * First reading
@@ -37,7 +39,9 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
         .then(() =>
           exiftoolProcessReading1.readMetadata(req.file.path, ['-File:all'])
         )
-        .then(console.log, console.error)
+        .then((value) => {
+          ;[responseData.before] = value?.data
+        })
         .then(() => exiftoolProcessReading1.close())
         /**
          * Removing data
@@ -63,14 +67,18 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
         .then(() =>
           exiftoolProcessReading2.readMetadata(req.file.path, ['-File:all'])
         )
-        .then(console.log, console.error)
+        .then((value) => {
+          ;[responseData.after] = value?.data
+        })
         .then(() => exiftoolProcessReading2.close())
+        .then(() =>
+          res.send({
+            status: true,
+            message: 'File Uploaded!',
+            data: responseData,
+          })
+        )
         .catch(console.error)
-
-      res.send({
-        status: true,
-        message: 'File Uploaded!',
-      })
     } else {
       res.status(400).send({
         status: false,

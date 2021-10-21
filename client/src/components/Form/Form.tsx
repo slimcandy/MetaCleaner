@@ -1,9 +1,11 @@
 import { ChangeEvent, useState, useEffect, useCallback } from 'react'
+import { IMetaDataObject } from '../../appTypes'
+import { IFormProps } from './types'
 
-const Form = () => {
+const Form = (props: IFormProps) => {
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [response, setResponse] = useState<any>()
+  const [response, setResponse] = useState<IMetaDataObject>()
 
   const uploadFile = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault()
@@ -26,7 +28,10 @@ const Form = () => {
       body: formData,
     })
       .then((response) => response.json())
-      .then((result) => console.log('result:', result))
+      .then((result) => {
+        props.onChange(result)
+        console.log('data:', result?.data)
+      })
       .catch((error) => {
         setError(String(error))
       })
