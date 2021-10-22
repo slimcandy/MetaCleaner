@@ -25,6 +25,11 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
       const responseData = {
         before: {},
         after: {},
+        file: {
+          name: req.file.originalname,
+          mimetype: req.file.mimetype,
+          link: '/',
+        },
       }
 
       /**
@@ -68,6 +73,7 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
           exiftoolProcessReading2.readMetadata(req.file.path, ['-File:all'])
         )
         .then((value) => {
+          responseData.file.link += value?.data[0]?.SourceFile
           ;[responseData.after] = value?.data
         })
         .then(() => exiftoolProcessReading2.close())

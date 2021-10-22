@@ -5,7 +5,7 @@ import { IFormProps } from './types'
 const Form = (props: IFormProps) => {
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [response, setResponse] = useState<IMetaDataObject>()
+  // const [response, setResponse] = useState<IMetaDataObject>()
 
   const uploadFile = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault()
@@ -28,21 +28,16 @@ const Form = (props: IFormProps) => {
       body: formData,
     })
       .then((response) => response.json())
-      .then((result) => {
-        props.onChange(result)
-        console.log('data:', result?.data)
-      })
+      .then(props.onChange)
       .catch((error) => {
         setError(String(error))
       })
-  }, [file])
+  }, [file, props.onChange])
 
   useEffect(() => {
     fetchFile()
 
-    return () => {
-      setFile(null)
-    }
+    return () => setFile(null)
   }, [fetchFile])
 
   return (
