@@ -17,10 +17,12 @@ const App = () => {
   const setMetaData = ({ data }: { data: IMetaDataObject }) => setMeta(data)
 
   return (
-    <div className='px-4 py-5 my-5 text-center'>
-      <div className='col-lg-6 mx-auto'>
-        <Form onChange={setMetaData} />
-        {Object.keys(meta.before).length > 1 && <Table data={meta} />}
+    <div className='container'>
+      <div className='px-4 py-5 my-5 text-center'>
+        <div className='col-lg-6 mx-auto'>
+          <Form onChange={setMetaData} />
+          {Object.keys(meta.before).length > 1 && <Table data={meta} />}
+        </div>
       </div>
     </div>
   )

@@ -1,11 +1,9 @@
 import { ChangeEvent, useState, useEffect, useCallback } from 'react'
-import { IMetaDataObject } from '../../appTypes'
 import { IFormProps } from './types'
 
 const Form = (props: IFormProps) => {
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
-  // const [response, setResponse] = useState<IMetaDataObject>()
 
   const uploadFile = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault()
@@ -41,7 +39,7 @@ const Form = (props: IFormProps) => {
   }, [fetchFile])
 
   return (
-    <form className='lead mb-4'>
+    <form className='lead mb-4' method='POST' encType='multipart/form-data'>
       <div>
         <label htmlFor='formFileLg' className='form-label'>
           Upload a file
@@ -51,6 +49,8 @@ const Form = (props: IFormProps) => {
           id='formFileLg'
           type='file'
           onChange={uploadFile}
+          required
+          autoFocus
         />
         {error && <div className='invalid-feedback'>{error}</div>}
       </div>
