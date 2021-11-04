@@ -14,6 +14,7 @@ const app = express()
 const upload = multer({ dest: 'temp/' })
 
 app.use(cors())
+app.use('/download', express.static('temp'))
 
 app.post('/upload', upload.single('file'), (req, res, next) => {
   try {
@@ -28,7 +29,7 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
         file: {
           name: req.file.originalname,
           mimetype: req.file.mimetype,
-          link: '/',
+          link: req.protocol + '://' + req.get('host') + '/download/',
         },
       }
 
@@ -73,7 +74,9 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
           exiftoolProcessReading2.readMetadata(req.file.path, ['-File:all'])
         )
         .then((value) => {
-          responseData.file.link += value?.data[0]?.SourceFile
+          // get filename
+          responseData.file.link +=
+            value?.data[0]?.SourceFile.split(/(\\|\/)/g).pop()
           ;[responseData.after] = value?.data
         })
         .then(() => exiftoolProcessReading2.close())
