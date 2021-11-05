@@ -1,17 +1,18 @@
 import express from 'express'
-import exiftool from 'node-exiftool'
-import exiftoolBin from 'dist-exiftool'
+import { ExiftoolProcess } from 'node-exiftool'
+import path from 'path'
 import multer from 'multer'
 import cors from 'cors'
 
-const metadata = {
-  all: '', // remove all metadata at first
-  Publisher: 'awesomewebsitewithgoogleads.fraud',
-}
+const EXIFTOOL_ARGS_REMOVE_EXIF = [
+  'charset filename=UTF8',
+  'overwrite_original',
+]
 
 const PORT = process.env.PORT ?? 3001
 const app = express()
 const upload = multer({ dest: 'temp/' })
+const EXIFTOOL_PATH = path.resolve('./resources/exiftool')
 
 app.use(cors())
 app.use('/download', express.static('temp'))
@@ -19,19 +20,27 @@ app.use('/download', express.static('temp'))
 app.post('/upload', upload.single('file'), (req, res, next) => {
   try {
     if (req.file) {
-      const exiftoolProcessWriting = new exiftool.ExiftoolProcess(exiftoolBin)
-      const exiftoolProcessReading1 = new exiftool.ExiftoolProcess(exiftoolBin)
-      const exiftoolProcessReading2 = new exiftool.ExiftoolProcess(exiftoolBin)
+      const exiftoolProcessWriting = new ExiftoolProcess(EXIFTOOL_PATH)
+      const exiftoolProcessReading1 = new ExiftoolProcess(EXIFTOOL_PATH)
+      const exiftoolProcessReading2 = new ExiftoolProcess(EXIFTOOL_PATH)
 
+      const filename = String(req.file.originalname)
+        .trim()
+        .replace(/[^\w\.]/gi, '_')
+        .toLowerCase()
       const responseData = {
         before: {},
         after: {},
         file: {
-          name: req.file.originalname,
-          mimetype: req.file.mimetype,
-          link: req.protocol + '://' + req.get('host') + '/download/',
+          name: filename,
+          mimetype: String(req.file.mimetype),
+          link: String(
+            `${req.protocol}://${req.get('host')}/download/${filename}`
+          ),
         },
       }
+
+      EXIFTOOL_ARGS_REMOVE_EXIF.push(`filename=${filename}`)
 
       /**
        * First reading
@@ -56,9 +65,12 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
         // display pid
         .then((pid) => console.log('Started exiftool writing process %s', pid))
         .then(() =>
-          exiftoolProcessWriting.writeMetadata(req.file.path, metadata, [
-            'overwrite_original',
-          ])
+          exiftoolProcessWriting.writeMetadata(
+            req.file.path,
+            { all: '' },
+            EXIFTOOL_ARGS_REMOVE_EXIF,
+            false
+          )
         )
         .then(console.log, console.error)
         .then(() => exiftoolProcessWriting.close())
@@ -74,10 +86,9 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
           exiftoolProcessReading2.readMetadata(req.file.path, ['-File:all'])
         )
         .then((value) => {
-          // get filename
-          responseData.file.link +=
-            value?.data[0]?.SourceFile.split(/(\\|\/)/g).pop()
-          ;[responseData.after] = value?.data
+          if (value?.data) {
+            ;[responseData.after] = value?.data
+          }
         })
         .then(() => exiftoolProcessReading2.close())
         .then(() =>
