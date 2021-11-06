@@ -41,8 +41,8 @@ const Form = (props: IFormProps) => {
   return (
     <form className='lead mb-4' method='POST' encType='multipart/form-data'>
       <div>
-        <label htmlFor='formFileLg' className='form-label'>
-          Upload a file
+        <label htmlFor='formFileLg' className='form-label visually-hidden'>
+          File
         </label>
         <input
           className='form-control form-control-lg'
@@ -52,6 +52,9 @@ const Form = (props: IFormProps) => {
           required
           autoFocus
         />
+        <div className='form-text'>
+          Upload image, video or PDF file to automatically remove metadata.
+        </div>
         {error && <div className='invalid-feedback'>{error}</div>}
       </div>
     </form>
