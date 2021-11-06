@@ -2,11 +2,13 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "cd client && npm start",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "start": "./node_modules/.bin/netlify-lambda serve src",
+    "build": "./node_modules/.bin/netlify-lambda build src"
   },
   "keywords": [],
   "author": "",
@@ -16,9 +18,11 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "multer": "^1.4.3",
-    "node-exiftool": "^2.3.0"
+    "netlify-lambda": "^2.0.15",
+    "node-exiftool": "^2.3.0",
+    "serverless-http": "^2.7.0"
   },
-  "type": "module",
+  "type": "commonjs",
   "devDependencies": {
     "nodemon": "^2.0.13"
   }

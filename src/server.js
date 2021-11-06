@@ -1,8 +1,9 @@
-import express from 'express'
-import { ExiftoolProcess } from 'node-exiftool'
-import path from 'path'
-import multer from 'multer'
-import cors from 'cors'
+const express = require('express')
+const serverless = require('serverless-http')
+const path = require('path')
+const multer = require('multer')
+const cors = require('cors')
+const { ExiftoolProcess } = require('node-exiftool')
 
 const EXIFTOOL_ARGS_REMOVE_EXIF = [
   'charset filename=UTF8',
@@ -13,11 +14,12 @@ const PORT = process.env.PORT ?? 3001
 const app = express()
 const upload = multer({ dest: 'temp/' })
 const EXIFTOOL_PATH = path.resolve('./resources/exiftool')
+const router = express.Router()
 
 app.use(cors())
 app.use('/download', express.static('temp'))
 
-app.post('/upload', upload.single('file'), (req, res, next) => {
+router.post('/upload', upload.single('file'), (req, res, next) => {
   try {
     if (req.file) {
       const exiftoolProcessWriting = new ExiftoolProcess(EXIFTOOL_PATH)
@@ -110,6 +112,17 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
   }
 })
 
-app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`)
+router.get('/test', (req, res) => {
+  res.json({
+    hello: 'test!',
+  })
 })
+
+// app.listen(PORT, () => {
+//   console.log(`Server listening on ${PORT}`)
+// })
+
+app.use(`/.netlify/functions/server`, router)
+
+module.exports = app
+module.exports.handler = serverless(app)
