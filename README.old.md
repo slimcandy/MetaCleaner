@@ -1,2 +1,0 @@
-# removemetaonline
-exiftool for web
