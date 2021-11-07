@@ -1,29 +1,22 @@
 {
-  "name": "server",
+  "name": "removemetaonline",
   "version": "1.0.0",
   "description": "",
-  "main": "server.mjs",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "client": "cd client && npm start",
-    "server": "nodemon server.js",
-    "start": "./node_modules/.bin/netlify-lambda serve src",
-    "build": "./node_modules/.bin/netlify-lambda build src"
+    "build": "cd client && npm install && npm run build",
+    "start": "cd server && npm install && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slimcandy/removemetaonline.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "express-fileupload": "^1.2.1",
-    "multer": "^1.4.3",
-    "netlify-lambda": "^2.0.15",
-    "node-exiftool": "^2.3.0",
-    "serverless-http": "^2.7.0"
+  "bugs": {
+    "url": "https://github.com/slimcandy/removemetaonline/issues"
   },
-  "type": "commonjs",
-  "devDependencies": {
-    "nodemon": "^2.0.13"
-  }
+  "homepage": "https://github.com/slimcandy/removemetaonline#readme"
 }

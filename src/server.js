@@ -18,6 +18,7 @@ const router = express.Router()
 
 app.use(cors())
 app.use('/download', express.static('temp'))
+app.use('/', express.static('../client/build'))
 
 router.post('/upload', upload.single('file'), (req, res, next) => {
   try {
