@@ -1,0 +1,22 @@
+{
+  "name": "removemetaonline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cd client && npm install && npm run build",
+    "start": "cd server && npm install && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slimcandy/removemetaonline.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/slimcandy/removemetaonline/issues"
+  },
+  "homepage": "https://github.com/slimcandy/removemetaonline#readme"
+}
