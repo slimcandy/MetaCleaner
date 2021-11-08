@@ -122,7 +122,7 @@ const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
             className='btn btn-link col-4'
             onClick={() => shareAction(fileInfo)}
           >
-            or share it {shareIcon}
+            or {shareIcon} share
           </button>
         )}
       </div>
