@@ -1,5 +1,5 @@
 import { IMetaDataObject } from '../../appTypes'
 
-export interface ITableProps {
+export interface IDownloadBlockProps {
   data: IMetaDataObject
 }

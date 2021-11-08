@@ -60,12 +60,10 @@ const Form = (props: IFormProps) => {
           name='file'
           ref={fileInputRef}
           onChange={uploadFile}
+          title='Choose an image, video or PDF file to automatically remove metadata.'
           required
           autoFocus
         />
-        <div className='form-text'>
-          Choose an image, video or PDF file to automatically remove metadata.
-        </div>
         {error && <div className='invalid-feedback'>{error}</div>}
       </div>
       <button type='submit' className='btn btn-primary btn-lg visually-hidden'>
