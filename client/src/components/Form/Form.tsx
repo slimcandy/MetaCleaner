@@ -1,16 +1,20 @@
-import { ChangeEvent, useState, useEffect, useCallback } from 'react'
+import { ChangeEvent, useState, useEffect, useCallback, useRef } from 'react'
 import { IFormProps } from './types'
 
 const Form = (props: IFormProps) => {
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const uploadFile = (event: ChangeEvent<HTMLInputElement>) => {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const uploadFile = (
+    event: ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault()
-    if (!event.target.files || !event.target.files[0]) {
+    if (!fileInputRef?.current?.files) {
       return setError('No file attached')
     }
-    return setFile(event.target.files[0])
+    return setFile(fileInputRef.current.files[0])
   }
 
   const fetchFile = useCallback(async () => {
@@ -39,7 +43,12 @@ const Form = (props: IFormProps) => {
   }, [fetchFile])
 
   return (
-    <form className='lead mb-4' method='POST' encType='multipart/form-data'>
+    <form
+      className='lead mb-4'
+      method='POST'
+      encType='multipart/form-data'
+      onSubmit={uploadFile}
+    >
       <div>
         <label htmlFor='formFileLg' className='form-label visually-hidden'>
           File
@@ -48,15 +57,20 @@ const Form = (props: IFormProps) => {
           className='form-control form-control-lg'
           id='formFileLg'
           type='file'
+          name='file'
+          ref={fileInputRef}
           onChange={uploadFile}
           required
           autoFocus
         />
         <div className='form-text'>
-          Upload image, video or PDF file to automatically remove metadata.
+          Choose an image, video or PDF file to automatically remove metadata.
         </div>
         {error && <div className='invalid-feedback'>{error}</div>}
       </div>
+      <button type='submit' className='btn btn-primary btn-lg visually-hidden'>
+        Upload file
+      </button>
     </form>
   )
 }
