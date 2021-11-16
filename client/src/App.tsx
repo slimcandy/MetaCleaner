@@ -18,7 +18,7 @@ const App = () => {
 
   return (
     <div className='container'>
-      <div className='px-4 py-5 my-5'>
+      <div className='px-1 px-sm-2 px-md-3 px-lg-4 px-xl-5 py-1 py-sm-2 py-md-3 py-lg-4 py-xl-5 my-1 my-sm-2 my-md-3 my-lg-4 my-xl-5'>
         <div className='col-lg-6 mx-auto'>
           <ol>
             <h2>

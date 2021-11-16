@@ -44,7 +44,7 @@ const Form = (props: IFormProps) => {
 
   return (
     <form
-      className='lead mb-4'
+      className='lead mb-1 mb-sm-2 mb-md-3 mb-lg-4'
       method='POST'
       encType='multipart/form-data'
       onSubmit={uploadFile}
