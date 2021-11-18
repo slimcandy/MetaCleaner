@@ -3,6 +3,7 @@ import DownloadBlock from './components/DownloadBlock/DownloadBlock'
 import Form from './components/Form/Form'
 import { IMetaDataObject } from './appTypes'
 import PrivacyBlock from './components/PrivacyBlock/PrivacyBlock'
+import InfoBlock from './components/InfoBlock/InfoBlock'
 
 const App = () => {
   const [meta, setMeta] = useState<IMetaDataObject>({
@@ -40,7 +41,10 @@ const App = () => {
       {/* mt-auto - sticks footer */}
       <hr className='border border-2 mt-auto' />
       <footer className='footer py-3 container'>
-        <PrivacyBlock />
+        <div className='row justify-content-around'>
+          <InfoBlock className='col-12 col-lg-4' />
+          <PrivacyBlock className='col-12 col-lg-4' />
+        </div>
       </footer>
     </>
   )
