@@ -39,7 +39,7 @@ const App = () => {
         </div>
       </main>
       {/* mt-auto - sticks footer */}
-      <hr className='border border-2 mt-auto' />
+      <hr className='border border-2 mt-auto shadow' />
       <footer className='footer py-3 container'>
         <div className='row justify-content-around'>
           <InfoBlock className='col-12 col-lg-4' />

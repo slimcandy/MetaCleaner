@@ -11,6 +11,7 @@ const PrivacyBlock = ({ className }: IProps): JSX.Element => {
         <a
           href='https://en.wikipedia.org/wiki/Exif'
           title='Wikipedia description'
+          rel='nofollow noopener'
         >
           EXIF
         </a>{' '}

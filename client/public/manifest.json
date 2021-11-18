@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Web exif cleaner",
+  "name": "Remove meta-data online",
+  "description": "Open Source exif meta data cleaner",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,18 +9,23 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "logo128.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "128x128"
     },
     {
-      "src": "logo512.png",
+      "src": "logo256.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "256x256"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#0d6efd",
+  "background_color": "#ffffff",
+  "default_locale": "en",
+  "manifest_version": 2,
+  "version": "1.0.0",
+  "homepage": "https://github.com/slimcandy/removemetaonline#readme",
+  "author": "Slim Candy"
 }

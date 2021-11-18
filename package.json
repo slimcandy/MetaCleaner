@@ -1,7 +1,9 @@
 {
   "name": "removemetaonline",
+  "productName": "RemoveMetaOnline",
+  "description": "Open Source exif meta data cleaner",
   "version": "1.0.0",
-  "description": "",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,8 +15,11 @@
     "url": "git+https://github.com/slimcandy/removemetaonline.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Slim Candy",
+    "email": "slimcandy@users.noreply.github.com",
+    "url": "https://github.com/slimcandy"
+  },
   "bugs": {
     "url": "https://github.com/slimcandy/removemetaonline/issues"
   },
