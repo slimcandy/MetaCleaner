@@ -2,7 +2,7 @@ export interface IMetaData {
   [key: string]: string
 }
 
-interface IMetaFileInfo {
+export interface IMetaFileInfo {
   name: string
   mimetype: string
   link: string

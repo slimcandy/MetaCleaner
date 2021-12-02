@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,6 +15,7 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "multer": "^1.4.3",
+    "node-cron": "^3.0.0",
     "node-exiftool": "^2.3.0"
   },
   "type": "module",
