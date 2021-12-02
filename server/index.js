@@ -3,7 +3,8 @@ import { ExiftoolProcess } from 'node-exiftool'
 import path from 'path'
 import multer from 'multer'
 import cors from 'cors'
-import { unlink } from 'fs/promises'
+import { unlink, readdir } from 'fs/promises'
+import cron from 'node-cron'
 
 const EXIFTOOL_ARGS_REMOVE_EXIF = [
   'charset filename=UTF8',
@@ -126,4 +127,18 @@ app.get('/download/:file(*)', (req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`)
+})
+
+cron.schedule('1 1 1 1 * *', async () => {
+  try {
+    const files = await readdir(path.resolve('temp'))
+    for (const file of files)
+      unlink(path.join(path.resolve('temp'), file)).then(
+        console.log,
+        console.error
+      )
+  } catch (err) {
+    console.error(err)
+  }
+  console.log('Cron removed files')
 })

@@ -110,13 +110,24 @@ const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
           title={fileInfo.name}
           className={`btn btn-primary btn-lg ${
             canIShareFile ? 'col-8' : 'col-12'
-          }`}
+          } ${props.loading ? 'disabled' : ''}`}
           type={fileInfo.mimetype}
           download
         >
-          {downloadIcon} Download
+          {props.loading ? (
+            <>
+              <span
+                className='spinner-border spinner-border-sm mx-2'
+                role='status'
+                aria-hidden='true'
+              ></span>
+              Loading...
+            </>
+          ) : (
+            <>{downloadIcon} Download</>
+          )}
         </a>
-        {canIShareFile && (
+        {canIShareFile && !props.loading && (
           <button
             type='button'
             className='btn btn-link col-4'
@@ -127,9 +138,15 @@ const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
         )}
       </div>
       {exifNumberAfter - exifNumberBefore < 0 && (
-        <small className='form-text'>
-          Meta tags like {exifMessageBefore} were removed
-        </small>
+        <>
+          <small className='form-text'>
+            Meta tags like {exifMessageBefore} were removed.
+          </small>
+          <br />
+          <small className='form-text'>
+            File disappears after download{canIShareFile && ' or share'}.
+          </small>
+        </>
       )}
     </>
   )

@@ -10,6 +10,7 @@ const Form = (props: IFormProps) => {
   const uploadFile = (
     event: ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLFormElement>
   ) => {
+    props.setLoadingData(true)
     event.preventDefault()
     if (!fileInputRef?.current?.files) {
       return setError('No file attached')
@@ -30,11 +31,14 @@ const Form = (props: IFormProps) => {
       body: formData,
     })
       .then((response) => response.json())
-      .then(props.onChange)
+      .then((jspnData) => {
+        props.onChange(jspnData)
+        props.setLoadingData(false)
+      })
       .catch((error) => {
         setError(String(error))
       })
-  }, [file, props.onChange])
+  }, [file, props])
 
   useEffect(() => {
     fetchFile()
