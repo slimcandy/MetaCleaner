@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import Table from './components/Table/Table'
+import DownloadBlock from './components/DownloadBlock/DownloadBlock'
 import Form from './components/Form/Form'
 import { IMetaDataObject } from './appTypes'
+import PrivacyBlock from './components/PrivacyBlock/PrivacyBlock'
+import InfoBlock from './components/InfoBlock/InfoBlock'
 
 const App = () => {
   const [meta, setMeta] = useState<IMetaDataObject>({
@@ -14,17 +16,41 @@ const App = () => {
     },
   })
 
-  const setMetaData = ({ data }: { data: IMetaDataObject }) => setMeta(data)
+  const [loading, setLoading] = useState(false)
+
+  const setMetaData = ({ data }: { data: IMetaDataObject }): void =>
+    setMeta(data)
+  const setLoadingData = (state: boolean): void => setLoading(state)
 
   return (
-    <div className='container'>
-      <div className='px-4 py-5 my-5 text-center'>
-        <div className='col-lg-6 mx-auto'>
-          <Form onChange={setMetaData} />
-          {Object.keys(meta.before).length > 1 && <Table data={meta} />}
+    <>
+      <main className='container flex-shrink-0 mb-5 mb-sm-4 mb-md-3 mb-lg-2 mb-xl-0'>
+        <div className='row'>
+          <div className='px-3 px-lg-4 px-xl-5 py-3 py-lg-4 py-xl-5 my-3 my-lg-4 my-xl-5'>
+            <div className='col-lg-6 mx-auto'>
+              <ol>
+                <h2>
+                  <li>choose file</li>
+                </h2>
+                <Form onChange={setMetaData} setLoadingData={setLoadingData} />
+                <h2>
+                  <li>download meta-free copy</li>
+                </h2>
+                <DownloadBlock data={meta} loading={loading} />
+              </ol>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </main>
+      {/* mt-auto - sticks footer */}
+      <hr className='border border-2 mt-auto shadow' />
+      <footer className='footer py-3 container'>
+        <div className='row justify-content-around'>
+          <InfoBlock className='col-12 col-sm-6 col-lg-4' />
+          <PrivacyBlock className='col-12 col-sm-6 col-lg-4' />
+        </div>
+      </footer>
+    </>
   )
 }
 
