@@ -2,7 +2,7 @@
   "name": "removemetaonline",
   "productName": "RemoveMetaOnline",
   "description": "Open Source exif meta data cleaner",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "main": "index.js",
   "scripts": {
