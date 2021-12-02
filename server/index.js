@@ -3,6 +3,7 @@ import { ExiftoolProcess } from 'node-exiftool'
 import path from 'path'
 import multer from 'multer'
 import cors from 'cors'
+import { unlink } from 'fs/promises'
 
 const EXIFTOOL_ARGS_REMOVE_EXIF = [
   'charset filename=UTF8',
@@ -15,7 +16,6 @@ const upload = multer({ dest: 'temp/' })
 const EXIFTOOL_PATH = path.resolve('./resources/exiftool')
 
 app.use(cors())
-app.use('/download', express.static('temp'))
 app.use('/', express.static('../client/build'))
 
 app.post('/upload', upload.single('file'), (req, res, next) => {
@@ -88,7 +88,7 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
         )
         .then((value) => {
           if (value?.data) {
-            ;[responseData.after] = value?.data
+            ;[responseData.after] = value.data
           }
         })
         .then(() => exiftoolProcessReading2.close())
@@ -109,6 +109,19 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
   } catch (err) {
     res.status(500).send(err)
   }
+})
+
+app.get('/download/:file(*)', (req, res, next) => {
+  const filePath = path.join(path.resolve('temp'), req.params.file)
+
+  res.download(filePath, (err) => {
+    if (err) {
+      if (err.status !== 404) return next(err)
+      return res.redirect('/')
+    }
+    // remove file
+    unlink(filePath).then(console.log, console.error)
+  })
 })
 
 app.listen(PORT, () => {
