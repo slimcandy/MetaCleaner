@@ -116,7 +116,7 @@ app.get('/download/:file(*)', (req, res, next) => {
   res.download(filePath, (err) => {
     if (err) {
       if (err.status !== 404) return next(err)
-      return res.redirect('/')
+      return res.redirect(302, '/')
     }
     // remove file
     unlink(filePath).then(console.log, console.error)
