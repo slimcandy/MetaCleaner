@@ -38,13 +38,14 @@ const shareAction = (file: IMetaFileInfo): Promise<void> => {
       })
       return navigatorHack.share({ files: [fileToShare] })
     })
+    .catch(console.error)
 }
 
 const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
   const [canIShareFile, setCanIShareFile] = useState(false)
   useEffect(() => {
     const navigatorHack: any = window.navigator
-    if (navigatorHack && navigatorHack.share && navigatorHack.canShare) {
+    if (navigatorHack && navigatorHack.canShare) {
       setCanIShareFile(true)
     }
   }, [])
