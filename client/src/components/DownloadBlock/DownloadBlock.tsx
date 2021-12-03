@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import { IDownloadBlockProps } from './types'
-import { IMetaData, IMetaFileInfo } from '../../appTypes'
-
-const exifTitleMaxLength = 3
+import { IMetaFileInfo } from '../../appTypes'
 
 const downloadIcon = (
   <svg
@@ -23,41 +21,12 @@ const shareIcon = (
     width='16'
     height='16'
     fill='currentColor'
-    className='bi bi-box-arrow-up'
+    className='bi bi-share'
     viewBox='0 0 16 16'
   >
-    <path
-      fillRule='evenodd'
-      d='M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1h-2z'
-    />
-    <path
-      fillRule='evenodd'
-      d='M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708l3-3z'
-    />
+    <path d='M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z' />
   </svg>
 )
-
-const parseTitleFromExifObject = (obj: IMetaData, limit = 3): string => {
-  let resultString = ''
-  const objLength = Object.keys(obj).length
-  const objKeys = Object.keys(obj)
-
-  if (objLength > limit) {
-    const objShortKeys = objKeys.slice(0, limit)
-    for (let i = 0; i < limit - 1; i++) {
-      resultString += `${objShortKeys[i]}, `
-    }
-    resultString = resultString.replace(/,\s+$/, '')
-    resultString += ` and ${objLength - limit + 1} more`
-  } else {
-    for (const key in obj) {
-      resultString += `${key}, `
-    }
-    resultString = resultString.replace(/,\s+$/, '')
-  }
-
-  return resultString
-}
 
 const shareAction = (file: IMetaFileInfo): Promise<void> => {
   const navigatorHack: any = window.navigator
@@ -69,13 +38,14 @@ const shareAction = (file: IMetaFileInfo): Promise<void> => {
       })
       return navigatorHack.share({ files: [fileToShare] })
     })
+    .catch(console.error)
 }
 
 const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
   const [canIShareFile, setCanIShareFile] = useState(false)
   useEffect(() => {
     const navigatorHack: any = window.navigator
-    if (navigatorHack && navigatorHack.share && navigatorHack.canShare) {
+    if (navigatorHack && navigatorHack.canShare) {
       setCanIShareFile(true)
     }
   }, [])
@@ -89,11 +59,6 @@ const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
   }
 
   const exifNumberBefore = Object.keys(props.data.before).length
-  const exifMessageBefore = parseTitleFromExifObject(
-    props.data.before,
-    exifTitleMaxLength
-  )
-  const exifNumberAfter = Object.keys(props.data.after).length
   const fileInfo = props.data.file
 
   if (props.data.file.name === '') {
@@ -104,50 +69,44 @@ const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
   }
   return (
     <>
-      <div className='d-flex'>
-        <a
-          href={fileInfo.link}
-          title={fileInfo.name}
-          className={`btn btn-primary btn-lg ${
-            canIShareFile ? 'col-8' : 'col-12'
-          } ${props.loading ? 'disabled' : ''}`}
-          type={fileInfo.mimetype}
-          download
-        >
-          {props.loading ? (
-            <>
-              <span
-                className='spinner-border spinner-border-sm mx-2'
-                role='status'
-                aria-hidden='true'
-              ></span>
-              Loading...
-            </>
-          ) : (
-            <>{downloadIcon} Download</>
-          )}
-        </a>
+      <div className='d-flex flex-wrap align-content-center align-items-center justify-content-center'>
+        {props.loading ? (
+          <button
+            className={`btn btn-primary btn-lg ${
+              canIShareFile ? 'col-12 col-sm-6' : 'col-12'
+            }`}
+            disabled
+          >
+            <span
+              className='spinner-border spinner-border-sm me-2'
+              role='status'
+              aria-hidden='true'
+            ></span>
+            Removing file meta-data…
+          </button>
+        ) : (
+          <a
+            href={fileInfo.link}
+            title={fileInfo.name}
+            className={`btn btn-primary btn-lg ${
+              props.loading ? 'disabled' : ''
+            } ${canIShareFile ? 'col-12 col-sm-6' : 'col-12'}`}
+            type={fileInfo.mimetype}
+            download
+          >
+            {downloadIcon} download
+          </a>
+        )}
         {canIShareFile && !props.loading && (
           <button
             type='button'
-            className='btn btn-link col-4'
+            className='btn btn-light btn-lg mt-2 mt-sm-0 col-12 offset-sm-1 col-sm-5'
             onClick={() => shareAction(fileInfo)}
           >
-            or {shareIcon} share
+            {shareIcon} share
           </button>
         )}
       </div>
-      {exifNumberAfter - exifNumberBefore < 0 && (
-        <>
-          <small className='form-text'>
-            Meta tags like {exifMessageBefore} were removed.
-          </small>
-          <br />
-          <small className='form-text'>
-            File disappears after download{canIShareFile && ' or share'}.
-          </small>
-        </>
-      )}
     </>
   )
 }

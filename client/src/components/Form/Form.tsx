@@ -31,13 +31,11 @@ const Form = (props: IFormProps) => {
       body: formData,
     })
       .then((response) => response.json())
-      .then((jspnData) => {
-        props.onChange(jspnData)
-        props.setLoadingData(false)
-      })
+      .then(props.onChange)
       .catch((error) => {
         setError(String(error))
       })
+      .finally(() => props.setLoadingData(false))
   }, [file, props])
 
   useEffect(() => {
@@ -52,6 +50,7 @@ const Form = (props: IFormProps) => {
       method='POST'
       encType='multipart/form-data'
       onSubmit={uploadFile}
+      action='/'
     >
       <div>
         <label htmlFor='formFileLg' className='form-label visually-hidden'>
@@ -65,13 +64,15 @@ const Form = (props: IFormProps) => {
           ref={fileInputRef}
           onChange={uploadFile}
           title='Choose an image, video or PDF file to automatically remove metadata.'
+          disabled={props.loading}
+          accept='image/*'
           required
           autoFocus
         />
         {error && <div className='invalid-feedback'>{error}</div>}
       </div>
       <button type='submit' className='btn btn-primary btn-lg visually-hidden'>
-        Upload file
+        Upload image
       </button>
     </form>
   )

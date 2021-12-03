@@ -29,11 +29,15 @@ const App = () => {
           <div className='px-3 px-lg-4 px-xl-5 py-3 py-lg-4 py-xl-5 my-3 my-lg-4 my-xl-5'>
             <div className='col-lg-6 mx-auto'>
               <ol>
-                <h2>
-                  <li>choose file</li>
+                <h2 className='h4'>
+                  <li>choose picture</li>
                 </h2>
-                <Form onChange={setMetaData} setLoadingData={setLoadingData} />
-                <h2>
+                <Form
+                  onChange={setMetaData}
+                  setLoadingData={setLoadingData}
+                  loading={loading}
+                />
+                <h2 className='h4'>
                   <li>download meta-free copy</li>
                 </h2>
                 <DownloadBlock data={meta} loading={loading} />
@@ -43,12 +47,15 @@ const App = () => {
         </div>
       </main>
       {/* mt-auto - sticks footer */}
-      <hr className='border border-2 mt-auto shadow' />
-      <footer className='footer py-3 container'>
-        <div className='row justify-content-around'>
-          <InfoBlock className='col-12 col-sm-6 col-lg-4' />
-          <PrivacyBlock className='col-12 col-sm-6 col-lg-4' />
-        </div>
+      <footer className='footer mt-auto'>
+        <details className='py-3 container'>
+          <summary className='btn btn-light btn-sm'>Privacy</summary>
+
+          <div className='row justify-content-around mt-4'>
+            <InfoBlock className='col-12 col-sm-6 col-lg-4' />
+            <PrivacyBlock className='col-12 col-sm-6 col-lg-4' />
+          </div>
+        </details>
       </footer>
     </>
   )
