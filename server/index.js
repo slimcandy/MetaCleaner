@@ -36,9 +36,7 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
         file: {
           name: filename,
           mimetype: String(req.file.mimetype),
-          link: String(
-            `${req.protocol}://${req.get('host')}/download/${filename}`
-          ),
+          link: String(`/download/${filename}`),
         },
       }
 
