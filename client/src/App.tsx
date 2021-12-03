@@ -43,12 +43,15 @@ const App = () => {
         </div>
       </main>
       {/* mt-auto - sticks footer */}
-      <hr className='border border-2 mt-auto shadow' />
-      <footer className='footer py-3 container'>
-        <div className='row justify-content-around'>
-          <InfoBlock className='col-12 col-sm-6 col-lg-4' />
-          <PrivacyBlock className='col-12 col-sm-6 col-lg-4' />
-        </div>
+      <footer className='footer text-center mt-auto'>
+        <details className='py-3 container'>
+          <summary className='btn btn-light btn-sm'>Privacy</summary>
+
+          <div className='row justify-content-around text-start mt-4'>
+            <InfoBlock className='col-12 col-sm-6 col-lg-4' />
+            <PrivacyBlock className='col-12 col-sm-6 col-lg-4' />
+          </div>
+        </details>
       </footer>
     </>
   )
