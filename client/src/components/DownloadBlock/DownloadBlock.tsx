@@ -92,7 +92,6 @@ const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
               props.loading ? 'disabled' : ''
             } ${canIShareFile ? 'col-12 col-sm-6' : 'col-12'}`}
             type={fileInfo.mimetype}
-            download
           >
             {downloadIcon} download
           </a>
