@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { IDownloadBlockProps } from './types'
 import { shareAction } from './utils'
-import downloadIcon from '../../static/icons/downloadIcon.svg'
-import shareIcon from '../../static/icons/shareIcon.svg'
+import { ReactComponent as DownloadIcon } from '../../static/icons/downloadIcon.svg'
+import { ReactComponent as ShareIcon } from '../../static/icons/shareIcon.svg'
 
 const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
   const [canIShareFile, setCanIShareFile] = useState<boolean>(false)
@@ -60,7 +60,7 @@ const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
             } ${canIShareFile ? 'col-12 col-sm-6' : 'col-12'}`}
             type={fileInfo.mimetype}
           >
-            {downloadIcon} download
+            <DownloadIcon /> download
           </a>
         )}
         {canIShareFile && !props.loading && (
@@ -69,7 +69,7 @@ const DownloadBlock = (props: IDownloadBlockProps): JSX.Element => {
             className='btn btn-light btn-lg mt-2 mt-sm-0 col-12 offset-sm-1 col-sm-5'
             onClick={() => shareAction(fileInfo)}
           >
-            {shareIcon} share
+            <ShareIcon /> share
           </button>
         )}
       </div>

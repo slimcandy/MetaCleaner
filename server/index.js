@@ -91,13 +91,7 @@ app.post('/upload', upload.single('file'), (req, res, next) => {
           }
         })
         .then(() => exiftoolProcessReading2.close())
-        .then(() =>
-          res.send({
-            status: true,
-            message: 'File Uploaded!',
-            data: responseData,
-          })
-        )
+        .then(() => res.send(responseData))
         .catch(console.error)
     } else {
       res.status(400).send({
