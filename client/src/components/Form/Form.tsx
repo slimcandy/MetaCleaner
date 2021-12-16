@@ -1,10 +1,9 @@
 import { ChangeEvent, useState, useEffect, useCallback, useRef } from 'react'
 import { IFormProps } from './types'
 
-const Form = (props: IFormProps) => {
+const Form = (props: IFormProps): JSX.Element => {
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
-
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const uploadFile = (
@@ -18,7 +17,7 @@ const Form = (props: IFormProps) => {
     return setFile(fileInputRef.current.files[0])
   }
 
-  const fetchFile = useCallback(async () => {
+  const fetchFileCallback = useCallback(async () => {
     if (!file) {
       return
     }
@@ -26,7 +25,7 @@ const Form = (props: IFormProps) => {
     const formData = new FormData()
     formData.append('file', file)
 
-    fetch('/upload', {
+    return fetch('/upload', {
       method: 'POST',
       body: formData,
     })
@@ -39,10 +38,10 @@ const Form = (props: IFormProps) => {
   }, [file, props])
 
   useEffect(() => {
-    fetchFile()
+    fetchFileCallback()
 
     return () => setFile(null)
-  }, [fetchFile])
+  }, [fetchFileCallback])
 
   return (
     <form

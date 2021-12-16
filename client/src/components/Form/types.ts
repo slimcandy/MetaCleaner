@@ -1,7 +1,8 @@
-import { IMetaDataObject } from '../../appTypes'
+import { Dispatch, SetStateAction } from 'react'
+import { IMetaDataObject } from '../App/types'
 
 export interface IFormProps {
-  onChange: ({ data }: { data: IMetaDataObject }) => void
-  setLoadingData: (state: boolean) => void
+  onChange: Dispatch<SetStateAction<IMetaDataObject>>
+  setLoadingData: Dispatch<SetStateAction<boolean>>
   loading: boolean
 }
