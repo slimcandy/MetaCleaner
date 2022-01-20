@@ -1,4 +1,4 @@
-import { IMetaDataObject } from '../../appTypes'
+import { IMetaDataObject } from '../App/types'
 
 export interface IDownloadBlockProps {
   data: IMetaDataObject

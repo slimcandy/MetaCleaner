@@ -1,6 +1,4 @@
-interface IProps {
-  className: string
-}
+import { IProps } from './types'
 
 const PrivacyBlock = ({ className }: IProps): JSX.Element => {
   return (

@@ -1,26 +1,23 @@
 import { useState } from 'react'
-import DownloadBlock from './components/DownloadBlock/DownloadBlock'
-import Form from './components/Form/Form'
-import { IMetaDataObject } from './appTypes'
-import PrivacyBlock from './components/PrivacyBlock/PrivacyBlock'
-import InfoBlock from './components/InfoBlock/InfoBlock'
+import DownloadBlock from '../DownloadBlock'
+import Form from '../Form'
+import PrivacyBlock from '../PrivacyBlock'
+import InfoBlock from '../InfoBlock'
+import { IMetaDataObject } from './types'
 
-const App = () => {
-  const [meta, setMeta] = useState<IMetaDataObject>({
-    before: {},
-    after: {},
-    file: {
-      name: '',
-      mimetype: '',
-      link: '',
-    },
-  })
+const defeultMetaData: IMetaDataObject = {
+  before: {},
+  after: {},
+  file: {
+    name: '',
+    mimetype: '',
+    link: '',
+  },
+}
 
-  const [loading, setLoading] = useState(false)
-
-  const setMetaData = ({ data }: { data: IMetaDataObject }): void =>
-    setMeta(data)
-  const setLoadingData = (state: boolean): void => setLoading(state)
+const App = (): JSX.Element => {
+  const [meta, setMeta] = useState<IMetaDataObject>(defeultMetaData)
+  const [loading, setLoading] = useState<boolean>(false)
 
   return (
     <>
@@ -33,8 +30,8 @@ const App = () => {
                   <li>choose picture</li>
                 </h2>
                 <Form
-                  onChange={setMetaData}
-                  setLoadingData={setLoadingData}
+                  onChange={setMeta}
+                  setLoadingData={setLoading}
                   loading={loading}
                 />
                 <h2 className='h4'>
@@ -46,11 +43,10 @@ const App = () => {
           </div>
         </div>
       </main>
-      {/* mt-auto - sticks footer */}
+      {/* mt-auto - sticks footer to the bottom */}
       <footer className='footer mt-auto'>
         <details className='py-3 container'>
           <summary className='btn btn-light btn-sm'>Privacy</summary>
-
           <div className='row justify-content-around mt-4'>
             <InfoBlock className='col-12 col-sm-6 col-lg-4' />
             <PrivacyBlock className='col-12 col-sm-6 col-lg-4' />
