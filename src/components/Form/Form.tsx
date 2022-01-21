@@ -1,58 +1,41 @@
-import { ChangeEvent, useState, useEffect, useCallback, useRef } from 'react'
+import { ChangeEvent, useState, useEffect, useRef } from 'react'
 import { IFormProps } from './types'
-import { readFile } from './utils'
 
 const Form = (props: IFormProps): JSX.Element => {
-  const [file, setFile] = useState<File | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [errors, setErrors] = useState<string[]>([])
   const formRef = useRef<HTMLFormElement>(null)
   const uploadFileRef = useRef<HTMLInputElement>(null)
 
-  const uploadFile = (
+  const handleSubmit = (
     event: ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLFormElement>
   ) => {
-    if (!formRef?.current) {
-      return setError('No form found')
-    }
     props.setLoadingData(true)
     event.preventDefault()
-    const data = new FormData(formRef?.current)
-    const file = data.get('file') as File
 
-    if (!file) {
-      return setError('No file attached')
+    if (!formRef?.current) {
+      return setErrors([...errors, 'No form found'])
     }
-    return setFile(file)
-  }
-
-  const fetchFileCallback = useCallback(async () => {
-    if (!file) {
-      return
-    }
-    const arrayBufferFile = await readFile(file)
-    if (!arrayBufferFile) {
-      return setError('No file converted')
+    if (!uploadFileRef?.current) {
+      return setErrors([...errors, 'No file field found'])
     }
 
-    return fetch(`${document.location.origin}/.netlify/functions/upload`, {
-      method: 'POST',
-      body: JSON.stringify({
-        imageBase64: arrayBufferFile,
-      }),
-    })
+    return fetch(
+      `${document.location.origin}/.netlify/functions/submission-created`,
+      {
+        body: new FormData(formRef?.current),
+        method: 'POST',
+        headers: {},
+      }
+    )
       .then((response) => response.json())
       .then(props.onChange)
       .catch((error) => {
-        setError(String(error))
+        console.error(error)
+        setErrors([...errors, 'Server:' + String(error)])
+        uploadFileRef.current?.setCustomValidity(error)
       })
       .finally(() => props.setLoadingData(false))
-  }, [file, props])
-
-  useEffect(() => {
-    fetchFileCallback()
-
-    return () => setFile(null)
-  }, [fetchFileCallback])
+  }
 
   useEffect(() => {
     !props.isFileReadyToDownload && uploadFileRef.current?.focus()
@@ -63,9 +46,10 @@ const Form = (props: IFormProps): JSX.Element => {
       className='lead mb-1 mb-sm-2 mb-md-3 mb-lg-4'
       method='POST'
       encType='multipart/form-data'
-      onSubmit={uploadFile}
+      onSubmit={handleSubmit}
       action='/'
       ref={formRef}
+      name='upload-form'
     >
       <div>
         <label htmlFor='formFileLg' className='form-label visually-hidden'>
@@ -76,16 +60,25 @@ const Form = (props: IFormProps): JSX.Element => {
           id='formFileLg'
           type='file'
           name='file'
-          onChange={uploadFile}
+          onChange={handleSubmit}
           title='Choose an image to automatically remove metadata.'
           disabled={props.loading}
           accept='image/jpeg'
           required
           ref={uploadFileRef}
         />
-        {error && <div className='invalid-feedback'>{error}</div>}
+        {errors.map((error) => (
+          <small className='form-text' key={error}>
+            {error}
+          </small>
+        ))}
+        <div className='invalid-feedback'>test</div>
       </div>
-      <button type='submit' className='btn btn-primary btn-lg visually-hidden'>
+      <button
+        type='submit'
+        className='btn btn-primary btn-lg visually-hidden'
+        disabled={props.loading}
+      >
         Upload image
       </button>
     </form>
