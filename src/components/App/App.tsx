@@ -6,7 +6,11 @@ import InfoBlock from '../InfoBlock'
 import { fileObject } from './types'
 
 const App = (): JSX.Element => {
-  const [file, setFile] = useState<fileObject>({ imageBase64: '' })
+  const [file, setFile] = useState<fileObject>({
+    imageBase64: '',
+    name: '',
+    mime: '',
+  })
   const [loading, setLoading] = useState<boolean>(false)
   const [isFileReadyToDownload, setIsFileReadyToDownload] =
     useState<boolean>(false)
