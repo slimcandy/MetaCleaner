@@ -10,4 +10,6 @@ export interface IMetaFileInfo {
 
 export type fileObject = {
   imageBase64: string
+  mime: string
+  name: string
 }
