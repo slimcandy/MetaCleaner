@@ -23,12 +23,21 @@ const handler: Handler = async (event: APIGatewayEvent, context: Context) => {
     };
   }
 
-  const testAccount = await createTestAccount();
+  try {
+    var testAccount = await createTestAccount();
+    console.log("Credentials obtained, sending message...");
+  } catch (error) {
+    console.error("Error creating test account:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Error creating test account" }),
+    };
+  }
 
   const transporter = createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false,
+    host: testAccount.smtp.host,
+    port: testAccount.smtp.port,
+    secure: testAccount.smtp.secure,
     auth: {
       user: testAccount.user,
       pass: testAccount.pass,
@@ -36,7 +45,7 @@ const handler: Handler = async (event: APIGatewayEvent, context: Context) => {
   });
 
   const mailOptions = {
-    from: "noreply@example.com",
+    from: "Nodemailer <example@nodemailer.com>",
     to: email,
     subject: subject,
     text: message,
