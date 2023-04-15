@@ -1,6 +1,7 @@
+/* eslint-disable no-var */
 import React, { useId, useState } from "react";
 
-function App() {
+function App(): JSX.Element {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -11,9 +12,7 @@ function App() {
   const subjectId = useId();
   const messageId = useId();
 
-  async function sendEmail(event: React.FormEvent) {
-    event.preventDefault();
-
+  async function sendEmail(): Promise<void> {
     try {
       setStatus("Sending...");
       const response = await fetch("/.netlify/functions/send-email", {
@@ -23,17 +22,14 @@ function App() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        var data = await response.json();
         setStatus("Email sent successfully: " + JSON.stringify(data));
         setPreviewUrl(data.previewUrl);
       } else {
         setStatus(
-          "Error sending email: " +
-            response.statusText +
-            " " +
-            response.status +
-            " " +
-            response.body
+          `Error sending email: ${response.statusText} ${
+            response.status
+          } ${JSON.stringify(data)}`
         );
       }
     } catch (error) {
@@ -41,20 +37,26 @@ function App() {
     }
   }
 
-  function onEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
-    return setEmail(event.target.value);
+  function onFormSubmit(event: React.FormEvent): void {
+    event.preventDefault();
+    void sendEmail();
   }
-  function onSubjectChange(event: React.ChangeEvent<HTMLInputElement>) {
-    return setSubject(event.target.value);
+  function onEmailChange(event: React.ChangeEvent<HTMLInputElement>): void {
+    setEmail(event.target.value);
   }
-  function onMessageChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    return setMessage(event.target.value);
+  function onSubjectChange(event: React.ChangeEvent<HTMLInputElement>): void {
+    setSubject(event.target.value);
+  }
+  function onMessageChange(
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ): void {
+    setMessage(event.target.value);
   }
 
   return (
     <>
       <h1>Send an Email</h1>
-      <form onSubmit={sendEmail}>
+      <form onSubmit={onFormSubmit}>
         <dl>
           <dt>
             <label htmlFor={emailId}>Email</label>
