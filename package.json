@@ -1,23 +1,21 @@
 {
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "typescript": "^5.0.4"
-  },
   "name": "removemetaonline",
   "version": "1.0.0",
-  "devDependencies": {
-    "@types/react": "^18.0.35",
-    "@types/react-dom": "^18.0.11",
-    "parcel": "^2.8.3",
-    "process": "^0.11.10"
-  },
   "scripts": {
-    "start": "tsc ./functions/send-email.ts && parcel public/index.html",
-    "build": "tsc ./functions/send-email.ts && parcel build public/index.html"
+    "start": "parcel public/index.html",
+    "build": "parcel build public/index.html"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.35",
+    "@types/react-dom": "^18.0.11",
+    "parcel": "^2.8.3"
+  }
 }

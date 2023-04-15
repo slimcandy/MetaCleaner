@@ -102,11 +102,13 @@ function App() {
           <h2>Status</h2>
           <samp>{status}</samp>
 
-          <h2>Preview Email</h2>
-          {previewUrl.length > 0 && (
-            <a href={previewUrl} target="_blank" rel="noreferrer">
-              {previewUrl}
-            </a>
+          {previewUrl.trim().length > 0 && (
+            <>
+              <h2>Preview Email</h2>
+              <a href={previewUrl} target="_blank" rel="noreferrer">
+                {previewUrl}
+              </a>
+            </>
           )}
         </>
       )}
