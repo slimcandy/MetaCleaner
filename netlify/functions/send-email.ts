@@ -3,7 +3,11 @@ import {
   createTransport,
   getTestMessageUrl,
 } from "nodemailer";
-import { Handler, APIGatewayEvent, Context } from "aws-lambda";
+import {
+  type Handler,
+  type HandlerEvent,
+  type HandlerContext,
+} from "@netlify/functions";
 
 interface EmailData {
   email: string;
@@ -11,12 +15,19 @@ interface EmailData {
   message: string;
 }
 
-const handler: Handler = async (event: APIGatewayEvent, context: Context) => {
-  const { email, subject, message } = JSON.parse(
-    event.body || "{}"
-  ) as EmailData;
+const handler: Handler = async function handler(
+  event: HandlerEvent,
+  context: HandlerContext
+) {
+  if (event.body === null) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: "Invalid input" }),
+    };
+  }
 
-  if (!email || !subject || !message) {
+  const { email, subject, message } = JSON.parse(event.body) as EmailData;
+  if (email.length === 0 || subject.length === 0 || message.length === 0) {
     return {
       statusCode: 400,
       body: JSON.stringify({ error: "Invalid input" }),
@@ -47,7 +58,7 @@ const handler: Handler = async (event: APIGatewayEvent, context: Context) => {
   const mailOptions = {
     from: "Nodemailer <example@nodemailer.com>",
     to: email,
-    subject: subject,
+    subject,
     text: message,
   };
 

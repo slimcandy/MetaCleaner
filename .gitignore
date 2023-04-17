@@ -5,6 +5,8 @@
 /node_modules
 /functions/node_modules
 /functions/send-email.js
+/netlify/functions/node_modules
+/netlify/functions/send-email.js
 /.parcel-cache
 
 /.pnp
@@ -27,5 +29,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
 # Local Netlify folder
 .netlify
