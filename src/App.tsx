@@ -11,7 +11,7 @@ function App(): JSX.Element {
   const fileId = useId();
   const fileInput = useRef<HTMLInputElement>(null);
 
-  function handleFormClick() {
+  function handleFormClick(): void {
     fileInput.current?.click();
   }
 

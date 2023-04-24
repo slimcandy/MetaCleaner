@@ -1,9 +1,9 @@
-export function handleDragEvents(event: React.DragEvent<HTMLDivElement>) {
+export function handleDragEvents(event: React.DragEvent<HTMLDivElement>): void {
   event.preventDefault();
   event.stopPropagation();
 }
 
-export function removeMetaData(file: File) {
+export function removeMetaData(file: File): void {
   const img = new Image();
   img.src = URL.createObjectURL(file);
 
@@ -33,21 +33,21 @@ export function removeMetaData(file: File) {
   };
 }
 
-export function handleFiles(files: FileList = new DataTransfer().files) {
+export function handleFiles(files: FileList = new DataTransfer().files): void {
   for (let i = 0; i < files.length; i++) {
     removeMetaData(files[i]);
   }
 }
 
-export function handleDrop(event: React.DragEvent<HTMLDivElement>) {
+export function handleDrop(event: React.DragEvent<HTMLDivElement>): void {
   handleDragEvents(event);
   handleFiles(event.dataTransfer.files);
 }
 
 export function handleFilePickerChange(
   event: React.ChangeEvent<HTMLInputElement>
-) {
-  if (event.target.files) {
+): void {
+  if (event.target.files != null) {
     handleFiles(event.target.files);
   }
 }
