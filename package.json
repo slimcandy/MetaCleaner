@@ -1,41 +1,57 @@
 {
   "name": "removemetaonline",
-  "version": "2.0.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Easily remove metadata from your images with our online tool, MetaCleaner. Preserve your privacy by stripping out EXIF data from your photos in seconds.",
+  "keywords": [
+    "metadata removal",
+    "image optimization",
+    "privacy",
+    "image processing",
+    "exif data",
+    "remove metadata"
+  ],
+  "main": "index.js",
   "dependencies": {
-    "@types/node": "^16.11.21",
-    "@types/react": "^17.0.38",
-    "@types/react-dom": "^17.0.11",
-    "bootstrap": "^5.1.3",
-    "lambda-multipart-parser": "^1.0.1",
-    "piexifjs": "^1.0.6",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "5.0.0",
-    "typescript": "^4.5.4",
-    "web-vitals": "^2.1.3"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
+    "@types/react": "^18.0.37",
+    "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-standard-with-typescript": "^34.0.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.32.2",
+    "parcel": "^2.8.3",
+    "postcss": "^8.4.23",
+    "prettier": "2.8.8",
+    "process": "^0.11.10",
+    "tailwindcss": "^3.3.1",
+    "typescript": "^5.0.4",
+    "husky": "^8.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test"
+    "start": "parcel src/index.html",
+    "build": "parcel src/index.html",
+    "prepare": "husky install",
+    "format": "prettier --write src/**/*.{ts,tsx}",
+    "lint": "eslint --fix src/**/*.{ts,tsx}",
+    "test": "npm run format && npm run lint"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "author": "@slimcandy",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slimcandy/removemetaonline.git"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 3 chrome version",
-      "last 3 firefox version",
-      "last 3 safari version"
-    ]
-  }
+  "bugs": {
+    "url": "https://github.com/slimcandy/removemetaonline/issues"
+  },
+  "homepage": "https://metacleaner.js.garden"
 }
