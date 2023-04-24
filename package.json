@@ -10,7 +10,6 @@
     "exif data",
     "remove metadata"
   ],
-  "main": "index.js",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -38,7 +37,7 @@
   },
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "parcel src/index.html",
+    "build": "parcel build src/index.html",
     "prepare": "husky install",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "lint": "eslint --fix src/**/*.{ts,tsx}",
