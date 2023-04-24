@@ -15,6 +15,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@parcel/transformer-css": "^2.8.3",
     "@tailwindcss/typography": "^0.5.9",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
@@ -27,13 +28,13 @@
     "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.32.2",
+    "husky": "^8.0.0",
     "parcel": "^2.8.3",
     "postcss": "^8.4.23",
     "prettier": "2.8.8",
     "process": "^0.11.10",
     "tailwindcss": "^3.3.1",
-    "typescript": "^5.0.4",
-    "husky": "^8.0.0"
+    "typescript": "^5.0.4"
   },
   "scripts": {
     "start": "parcel src/index.html --no-cache",
@@ -52,9 +53,5 @@
   "bugs": {
     "url": "https://github.com/slimcandy/removemetaonline/issues"
   },
-  "homepage": "https://metacleaner.js.garden",
-  "engines": {
-    "node": ">=19.9.0",
-    "npm": ">=9.6.3"
-  }
+  "homepage": "https://metacleaner.js.garden"
 }
