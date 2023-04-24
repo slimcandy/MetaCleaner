@@ -1,62 +1,18 @@
 /* eslint-disable no-var */
 import React, { useId, useRef } from "react";
 import "./App.css";
-
-function handleDragEvents(event: React.DragEvent<HTMLDivElement>) {
-  event.preventDefault();
-  event.stopPropagation();
-}
-
-function removeMetaData(file: File) {
-  const img = new Image();
-  img.src = URL.createObjectURL(file);
-
-  img.onload = function imageOnLoad() {
-    const canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext("2d");
-    ctx?.drawImage(img, 0, 0);
-
-    // Convert canvas to a Blob without metadata
-    canvas.toBlob(function saveFile(blob) {
-      if (blob === null) return;
-
-      // Save the Blob as a file
-      const anchor = document.createElement("a");
-      anchor.href = URL.createObjectURL(blob);
-      anchor.download = file.name;
-      anchor.style.display = "none";
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-      URL.revokeObjectURL(anchor.href);
-    }, file.type);
-    // Revoke object URL to free memory
-    URL.revokeObjectURL(img.src);
-  };
-}
+import {
+  handleDragEvents,
+  handleDrop,
+  handleFilePickerChange,
+} from "./functions";
 
 function App(): JSX.Element {
   const fileId = useId();
-  const dropArea = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  function handleFiles(files: FileList) {
-    for (let i = 0; i < files.length; i++) {
-      removeMetaData(files[i]);
-    }
-  }
-
-  function handleFileInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target.files) {
-      handleFiles(event.target.files);
-    }
-  }
-
-  function handleDrop(event: React.DragEvent<HTMLDivElement>) {
-    handleDragEvents(event);
-    handleFiles(event.dataTransfer.files);
+  function handleFormClick() {
+    fileInput.current?.click();
   }
 
   return (
@@ -66,11 +22,11 @@ function App(): JSX.Element {
       </h1>
       <form className="py-4 px-6">
         <div
-          ref={dropArea}
           onDragEnter={handleDragEvents}
           onDragOver={handleDragEvents}
           onDragLeave={handleDragEvents}
           onDrop={handleDrop}
+          onClick={handleFormClick}
           className="border-2 border-dashed border-slate-300 rounded-lg px-6 py-7 w-full text-center cursor-pointer hover:border-slate-400 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent hover:shadow-xl hover:bg-slate-100 active:bg-slate-200 active:shadow-none active:border-transparent"
         >
           <svg
@@ -112,7 +68,7 @@ function App(): JSX.Element {
           type="file"
           accept="image/*"
           ref={fileInput}
-          onChange={handleFileInputChange}
+          onChange={handleFilePickerChange}
           placeholder="or Browse"
           multiple
           hidden
