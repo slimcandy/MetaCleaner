@@ -36,7 +36,7 @@
     "husky": "^8.0.0"
   },
   "scripts": {
-    "start": "parcel src/index.html",
+    "start": "parcel src/index.html --no-cache",
     "build": "parcel build src/index.html",
     "prepare": "husky install",
     "format": "prettier --write src/**/*.{ts,tsx}",
@@ -52,5 +52,9 @@
   "bugs": {
     "url": "https://github.com/slimcandy/removemetaonline/issues"
   },
-  "homepage": "https://metacleaner.js.garden"
+  "homepage": "https://metacleaner.js.garden",
+  "engines": {
+    "node": ">=19.9.0",
+    "npm": ">=9.6.3"
+  }
 }
