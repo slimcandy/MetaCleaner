@@ -15,7 +15,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@parcel/transformer-css": "^2.8.3",
+    "@parcel/css": "^1.14.0",
     "@tailwindcss/typography": "^0.5.9",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
