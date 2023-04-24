@@ -1,7 +1,15 @@
 {
   "name": "removemetaonline",
   "version": "1.0.0",
-  "description": "",
+  "description": "Easily remove metadata from your images with our online tool, MetaCleaner. Preserve your privacy by stripping out EXIF data from your photos in seconds.",
+  "keywords": [
+    "metadata removal",
+    "image optimization",
+    "privacy",
+    "image processing",
+    "exif data",
+    "remove metadata"
+  ],
   "main": "index.js",
   "dependencies": {
     "react": "^18.2.0",
@@ -20,7 +28,14 @@
   "scripts": {
     "start": "parcel src/index.html"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "@slimcandy",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slimcandy/removemetaonline.git"
+  },
+  "bugs": {
+    "url": "https://github.com/slimcandy/removemetaonline/issues"
+  },
+  "homepage": "https://metacleaner.js.garden"
 }
