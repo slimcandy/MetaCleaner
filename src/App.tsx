@@ -15,8 +15,8 @@ function App(): JSX.Element {
   }
 
   return (
-    <div className="prose-sm md:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl mx-auto sm:rounded-lg sm:shadow-2xl bg-white sm:border-2 sm:border-slate-300 w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl">
-      <h1 className="border-b-2 border-slate-300 px-2 sm:px-4 md:px-6 py-3 sm:py-5 md:py-7 w-full">
+    <div className="prose mx-auto sm:rounded-lg sm:shadow-2xl bg-white sm:border-2 sm:border-slate-300 w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl">
+      <h1 className="border-b-2 border-slate-300 p-1 sm:p-2 md:px-4 w-full text-base text-center">
         Instantly Remove Metadata
       </h1>
       <form className="py-2 sm:py-3 md:py-4 px-4 sm:px-5 md:px-6">
@@ -42,7 +42,7 @@ function App(): JSX.Element {
           <h3 className="sm:mt-1 md:mt-2 text-base font-medium text-slate-900">
             Drag and drop your image here
           </h3>
-          <ol className="sm:mt-1 text-xs text-slate-500 p-0">
+          <ul className="sm:mt-1 text-xs text-slate-500 p-0 list-none">
             <li className="p-0">No submit needed</li>
             <li className="p-0">
               Website immediately returns metadata-free images
@@ -51,26 +51,13 @@ function App(): JSX.Element {
             <li className="p-0">
               All metadata is removed directly in your browser
             </li>
-          </ol>
+          </ul>
         </div>
-        <label
-          htmlFor={fileId}
-          className="mt-2 sm:mt-4 md:mt-6 block text-base font-medium text-slate-900"
-        >
+        <label htmlFor={fileId} className="sr-only">
           Or browse
         </label>
         <input
-          className="block w-full text-sm text-slate-500 
-          sm:my-2 sm:py-2 sm:px-4
-          sm:rounded sm:border-2 sm:border-slate-300
-          sm:file:mr-4 file:py-2 file:px-4
-          file:rounded file:border-2 file:border-slate-300 
-          file:font-semibold
-          file:slate-900 file:bg-white file:hover:border-slate-400 file:transition-all file:duration-300 file:ease-in-out
-          file:focus:outline-none file:focus:ring-2 file:focus:ring-slate-400 file:focus:border-transparent
-          file:hover:shadow-xl file:hover:bg-slate-100 file:hover:cursor-pointer
-          file:active:bg-slate-200 file:active:shadow-none file:active:border-transparent
-        "
+          className="sr-only"
           id={fileId}
           type="file"
           accept="image/*"
