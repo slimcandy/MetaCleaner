@@ -1,5 +1,5 @@
 {
-  "name": "removemetaonline",
+  "name": "metacleaner",
   "version": "1.0.0",
   "description": "Easily remove metadata from your images with our online tool, MetaCleaner. Preserve your privacy by stripping out EXIF data from your photos in seconds.",
   "keywords": [
@@ -15,7 +15,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@parcel/css": "^1.14.0",
     "@tailwindcss/typography": "^0.5.9",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
