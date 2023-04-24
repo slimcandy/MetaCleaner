@@ -1,6 +1,5 @@
 /* eslint-disable no-var */
 import React, { useId, useRef } from "react";
-import "./App.css";
 import {
   handleDragEvents,
   handleDrop,
