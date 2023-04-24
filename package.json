@@ -37,8 +37,8 @@
     "typescript": "^5.0.4"
   },
   "scripts": {
-    "start": "parcel src/index.html --no-cache",
-    "build": "parcel build src/index.html",
+    "start": "parcel public/index.html --no-cache",
+    "build": "parcel build public/index.html",
     "prepare": "husky install",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "lint": "eslint --fix src/**/*.{ts,tsx}",
