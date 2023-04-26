@@ -23,8 +23,7 @@
     "./src/**/*",
     "vite.config.js",
     "tsconfig.node.json",
-    "tailwind.config.js",
-    "public/sw"
+    "tailwind.config.js"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
