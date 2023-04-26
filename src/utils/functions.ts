@@ -8,10 +8,10 @@ export function removeMetaData(file: File): void {
   img.src = URL.createObjectURL(file);
 
   img.onload = function imageOnLoad() {
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     canvas.width = img.width;
     canvas.height = img.height;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     ctx?.drawImage(img, 0, 0);
 
     // Convert canvas to a Blob without metadata
@@ -19,10 +19,10 @@ export function removeMetaData(file: File): void {
       if (blob === null) return;
 
       // Save the Blob as a file
-      const anchor = document.createElement("a");
+      const anchor = document.createElement('a');
       anchor.href = URL.createObjectURL(blob);
       anchor.download = file.name;
-      anchor.style.display = "none";
+      anchor.style.display = 'none';
       document.body.appendChild(anchor);
       anchor.click();
       document.body.removeChild(anchor);

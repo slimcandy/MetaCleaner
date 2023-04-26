@@ -1,10 +1,10 @@
 /* eslint-disable no-var */
-import React, { useId, useRef } from "react";
+import { useId, useRef } from 'react';
 import {
   handleDragEvents,
   handleDrop,
-  handleFilePickerChange,
-} from "./functions";
+  handleFilePickerChange
+} from './utils/functions';
 
 function App(): JSX.Element {
   const fileId = useId();
@@ -26,7 +26,7 @@ function App(): JSX.Element {
           onDragLeave={handleDragEvents}
           onDrop={handleDrop}
           onClick={handleFormClick}
-          className="border-2 border-dashed border-slate-300 rounded-lg px-2 sm:px-4 md:px-6 py-3 sm:py-5 md:py-7 w-full text-center cursor-pointer hover:border-slate-400 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent hover:shadow-xl hover:bg-slate-100 active:bg-slate-200 active:shadow-none active:border-transparent"
+          className="border-2 border-dashed border-slate-300 rounded-lg px-2 sm:px-4 md:px-6 py-3 sm:py-5 md:py-7 w-full text-center cursor-pointer hover:border-slate-400 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent hover:shadow-xl hover:bg-slate-100 active:bg-slate-200 active:shadow-none active:border-transparent select-none"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
