@@ -37,7 +37,7 @@ function App(): JSX.Element {
   return (
     <div className="prose mx-auto sm:rounded-lg sm:shadow-2xl bg-white sm:border-2 sm:border-slate-300 w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl">
       <ol className="list-inside list-decimal p-0">
-        <li className="border-b-2 border-slate-300 p-1 sm:p-2 md:px-4 w-full text-base font-medium text-slate-900">
+        <li className="border-b-2 border-slate-300 p-1 sm:p-2 md:px-4 w-full text-base text-slate-500">
           Pick an image:
         </li>
         <form className="py-2 sm:py-3 md:py-4 px-4 sm:px-5 md:px-6">
@@ -92,7 +92,7 @@ function App(): JSX.Element {
             Send
           </button>
         </form>
-        <li className="border-b-2 border-slate-300 p-1 sm:p-2 md:px-4 w-full text-base font-medium text-slate-900">
+        <li className="border-b-2 border-slate-300 p-1 sm:p-2 md:px-4 w-full text-base text-slate-500">
           Tap the image name to download:
         </li>
         {cleanerResults.length === 0 && (
