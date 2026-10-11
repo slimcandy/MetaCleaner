@@ -24,6 +24,15 @@ export async function cleanBytes(bytes: Uint8Array, options: CleanOptions = {}):
     case 'gif':
       result = (await import('./gif')).cleanGif(bytes);
       break;
+    case 'heic':
+      result = (await import('./heic')).cleanHeic(bytes, options);
+      break;
+    case 'tiff':
+      result = (await import('./tiff')).cleanTiff(bytes, options);
+      break;
+    case 'svg':
+      result = await (await import('./svg')).cleanSvg(bytes, options);
+      break;
     default:
       throw new UnsupportedFormatError(format);
   }

@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/favicon.ico', 'icons/apple-touch-icon.png'],
+      includeAssets: ['icons/apple-touch-icon.png'],
       manifest: {
         name: 'Meta Cleaner — remove metadata from images',
         short_name: 'Meta Cleaner',

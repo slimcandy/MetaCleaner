@@ -6,7 +6,7 @@ import { Heading } from './ui/heading';
 import { Switch, SwitchField, SwitchGroup } from './ui/switch';
 import { Strong, Text, TextLink } from './ui/text';
 import { cleanFile, type CleanOptions, type CleanReport } from './lib';
-import { formatBytes, formatCoords } from './format';
+import { formatCoords } from './format';
 
 interface Item {
   id: string;
@@ -135,7 +135,7 @@ export function App() {
       >
         <PhotoIcon className="size-8 text-zinc-400" />
         <Strong>Drop images here, or tap to choose</Strong>
-        <Text className="text-sm!">JPEG, PNG, WebP, GIF — cleaned without re-encoding.</Text>
+        <Text className="text-sm!">JPEG, PNG, WebP, GIF, HEIC, TIFF, SVG — cleaned without re-encoding.</Text>
         <input ref={inputRef} id={inputId} type="file" accept="image/*" multiple className="sr-only" onChange={onPick} />
       </div>
 
@@ -213,29 +213,23 @@ function ResultRow({ item }: { item: Item }) {
   let summary = '';
   let details = '';
   if (report) {
-    const removed: string[] = [];
-    if (exif) removed.push(exif.tagCount ? `EXIF (${exif.tagCount} tags)` : 'EXIF');
-    if (exif?.gps) removed.push('GPS');
-    if (report.hasXmp) removed.push('XMP');
-    if (report.hasIptc) removed.push('IPTC');
-    for (const r of report.removed) {
-      if (!/^(EXIF|XMP|IPTC)/.test(r.name)) removed.push(r.name.replace(/ \(.*\)$/, ''));
-    }
-    const what =
+    const otherBlocks = report.removed
+      .filter((r) => !r.name.startsWith('EXIF'))
+      .reduce((n, r) => n + (r.count ?? 1), 0);
+    const before = (exif?.tagCount ?? 0) + otherBlocks;
+    const after = report.kept.includes('Orientation') ? 1 : 0;
+    const tags = (n: number) => `${n} ${n === 1 ? 'tag' : 'tags'}`;
+    summary =
       report.removed.length === 0
-        ? 'already clean'
-        : `${[...new Set(removed)].join(', ')} removed${report.method === 'reencode' ? ' (re-encoded)' : ''}`;
-    summary = `Before ${formatBytes(report.bytesBefore)} → After ${formatBytes(report.bytesAfter)} · ${what}`;
-    if (report.kept.length) summary += ` · kept ${report.kept.join(', ').toLowerCase()}`;
+        ? 'Already clean'
+        : `Before: ${tags(before)} · After: ${tags(after)}${report.method === 'reencode' ? ' · re-encoded' : ''}`;
 
     const facts: string[] = [];
     if (exif?.make || exif?.model) facts.push([exif.make, exif.model].filter(Boolean).join(' '));
-    if (exif?.lens) facts.push(exif.lens);
     if (exif?.dateTimeOriginal) facts.push(exif.dateTimeOriginal);
-    if (exif?.software) facts.push(exif.software);
-    if (exif?.artist) facts.push(exif.artist);
     if (exif?.gps) facts.push(formatCoords(exif.gps.latitude, exif.gps.longitude));
-    details = facts.length ? `Was inside: ${facts.join(' · ')}` : summary;
+    for (const r of report.removed) facts.push(`${r.name}${r.count ? ` ×${r.count}` : ''}`);
+    details = facts.length ? `Removed: ${facts.join(' · ')}` : summary;
   }
 
   return (
@@ -255,41 +249,45 @@ function ResultRow({ item }: { item: Item }) {
         )}
       </button>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center gap-2">
-          {cleaned && url ? (
-            <a
-              href={url}
-              download={cleaned.name}
-              title="Download"
-              className="truncate font-semibold text-zinc-950 hover:underline dark:text-white"
-            >
-              {item.name}
-            </a>
-          ) : (
-            <Strong className="truncate">{item.name}</Strong>
-          )}
-          {item.status === 'working' && <Badge color="zinc">Working…</Badge>}
-          {item.status === 'error' && <Badge color="red">Failed</Badge>}
-          {exif?.gps && <Badge color="red">GPS</Badge>}
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
+        <div className="flex min-w-0 flex-1 basis-40 flex-col">
+          <div className="flex items-center gap-2">
+            {cleaned && url ? (
+              <a
+                href={url}
+                download={cleaned.name}
+                title="Download"
+                className="truncate font-semibold text-zinc-950 hover:underline dark:text-white"
+              >
+                {item.name}
+              </a>
+            ) : (
+              <Strong className="truncate">{item.name}</Strong>
+            )}
+            {item.status === 'working' && <Badge color="zinc">Working…</Badge>}
+            {item.status === 'error' && <Badge color="red">Failed</Badge>}
+            {exif?.gps && <Badge color="red">GPS</Badge>}
+          </div>
+          <Text className="truncate text-xs!" title={report ? details : item.error}>
+            {report ? summary : item.error}
+          </Text>
         </div>
-        <Text className="line-clamp-2 text-xs! sm:truncate" title={report ? details : item.error}>
-          {report ? summary : item.error}
-        </Text>
-      </div>
 
-      {cleaned && url && (
-        <div className="flex shrink-0 gap-1">
-          <Button plain href={url} download={cleaned.name} aria-label="Download" title="Download">
-            <DownloadIcon />
-          </Button>
-          {shareable && (
-            <Button plain onClick={() => share([cleaned])} aria-label="Share" title="Share">
-              <ShareIcon />
+        {cleaned && url && (
+          <div className="flex shrink-0 gap-1">
+            <Button plain href={url} download={cleaned.name}>
+              <DownloadIcon />
+              Download
             </Button>
-          )}
-        </div>
-      )}
+            {shareable && (
+              <Button plain onClick={() => share([cleaned])}>
+                <ShareIcon />
+                Share
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
     </li>
   );
 }
@@ -306,7 +304,11 @@ function DownloadIcon({ className }: { className?: string }) {
 function ShareIcon({ className }: { className?: string }) {
   return (
     <svg data-slot="icon" viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M13.75 7h-3v5.296l1.943-2.048a.75.75 0 0 1 1.114 1.004l-3.25 3.5a.75.75 0 0 1-1.114 0l-3.25-3.5a.75.75 0 1 1 1.114-1.004l1.943 2.048V7h1.5V1.75a.75.75 0 0 0-1.5 0V7h-3A2.25 2.25 0 0 0 4 9.25v7.5A2.25 2.25 0 0 0 6.25 19h7.5A2.25 2.25 0 0 0 16 16.75v-7.5A2.25 2.25 0 0 0 13.75 7Z" />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M13.75 7h-3V3.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0L6.2 4.74a.75.75 0 0 0 1.1 1.02l1.95-2.1V7h-3A2.25 2.25 0 0 0 4 9.25v7.5A2.25 2.25 0 0 0 6.25 19h7.5A2.25 2.25 0 0 0 16 16.75v-7.5A2.25 2.25 0 0 0 13.75 7Zm-3 0h-1.5v5.25a.75.75 0 0 0 1.5 0V7Z"
+      />
     </svg>
   );
 }

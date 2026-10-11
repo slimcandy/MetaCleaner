@@ -1,4 +1,4 @@
-export type Format = 'jpeg' | 'png' | 'webp' | 'gif' | 'unknown';
+export type Format = 'jpeg' | 'png' | 'webp' | 'gif' | 'heic' | 'tiff' | 'svg' | 'unknown';
 
 /** One block of metadata that was found in the source file. */
 export interface RemovedBlock {

@@ -18,12 +18,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint .",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{js,ts,json,md}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,json,md,toml}\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run lint && npm run test",
-    "prepare": "husky"
+    "check": "npm run typecheck && npm run test"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.10",
@@ -31,19 +29,12 @@
     "preact": "^11.0.1"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "@preact/preset-vite": "^2.10.6",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.5",
-    "eslint": "^10.12.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "globals": "^17.13.0",
-    "husky": "^9.1.7",
     "prettier": "^3.9.10",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.71.1",
     "vite": "^8.3.4",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.0.3"

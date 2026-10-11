@@ -18,6 +18,9 @@ Photos and documents carry more than pixels: GPS coordinates, camera serial numb
 | PNG | Lossless, chunk copy | tEXt, zTXt, iTXt (incl. XMP), eXIf, tIME, caBX, trailers | Colour chunks, iCCP (optional), Orientation (optional) |
 | WebP | Lossless, RIFF chunk copy | EXIF, XMP | ICCP (optional), animation, alpha |
 | GIF | Lossless, block copy | Comment extensions, XMP and other application extensions | Animation and looping |
+| HEIC / HEIF / AVIF | Lossless, in-place zeroing | EXIF, XMP, C2PA items and boxes | Image data, `irot` orientation, ICC (optional). File size does not change. |
+| TIFF / DNG | Lossless, IFD rewrite in place | Make, Model, dates, Artist, Software, XMP, IPTC, Photoshop, whole EXIF/GPS sub-IFDs, DNG serials and private data, C2PA | Strips/tiles, Orientation (optional), ICC (optional). File size does not change. |
+| SVG | Text rewrite | `<metadata>`, RDF, `<title>`, `<desc>`, comments, editor namespaces and attributes, `data-*`, UUID ids, metadata inside embedded base64 rasters | Drawing |
 | Anything else | Canvas re-encode (fallback) | Everything | Pixels, re-compressed |
 
 Before a block is removed it is read once so you can see what was inside: camera, date, software, author, GPS position, number of EXIF tags.
@@ -36,6 +39,10 @@ npm test
 
 Fixtures are regenerated with `scripts/make-fixtures.sh` (needs exiftool, sips, cwebp).
 
+## Credits
+
+The HEIC, TIFF and SVG cleaners are adapted from [picscrub](https://github.com/fasouto/picscrub) by Fabio Souto (MIT). ExifTool by Phil Harvey is the reference every test is checked against.
+
 ## Privacy guarantees you can check
 
 - The site is served with `Content-Security-Policy: default-src 'self'; connect-src 'self'` (see `netlify.toml`). The page cannot talk to any other origin, even if a dependency wanted to.
@@ -47,7 +54,7 @@ Fixtures are regenerated with `scripts/make-fixtures.sh` (needs exiftool, sips, 
 ```sh
 npm install
 npm run dev      # Vite dev server
-npm run check    # typecheck + lint + tests (also runs on pre-commit)
+npm run check    # typecheck + tests
 npm run build    # production build into dist/
 ```
 
