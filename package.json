@@ -9,7 +9,6 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,json,md,toml}\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run test"
@@ -23,7 +22,6 @@
     "@preact/preset-vite": "^2.10.6",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.5",
-    "prettier": "^3.9.10",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "vite": "^8.3.4",

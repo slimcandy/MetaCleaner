@@ -158,7 +158,7 @@ export function App() {
                 </Button>
               )}
               {done.length > 1 && canShareFiles(done.map((i) => i.cleaned)) && (
-                <Button outline onClick={() => share(done.map((i) => i.cleaned))}>
+                <Button color="dark/zinc" onClick={() => share(done.map((i) => i.cleaned))}>
                   <ShareIcon />
                   Share all
                 </Button>
@@ -279,7 +279,7 @@ function ResultRow({ item }: { item: Item }) {
               Download
             </Button>
             {shareable && (
-              <Button outline onClick={() => share([cleaned])}>
+              <Button color="dark/zinc" onClick={() => share([cleaned])}>
                 <ShareIcon />
                 Share
               </Button>
