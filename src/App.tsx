@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'preact/hooks';
-import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Description, Label } from './ui/fieldset';
 import { Heading } from './ui/heading';
@@ -207,29 +206,34 @@ export function App() {
 
 function ResultRow({ item }: { item: Item }) {
   const { report, cleaned, url } = item;
-  const exif = report?.exif;
   const shareable = cleaned ? canShareFiles([cleaned]) : false;
 
-  let summary = '';
+  let summary = item.error ?? 'Working…';
   let details = '';
   if (report) {
-    const otherBlocks = report.removed
-      .filter((r) => !r.name.startsWith('EXIF'))
-      .reduce((n, r) => n + (r.count ?? 1), 0);
-    const before = (exif?.tagCount ?? 0) + otherBlocks;
-    const after = report.kept.includes('Orientation') ? 1 : 0;
-    const tags = (n: number) => `${n} ${n === 1 ? 'tag' : 'tags'}`;
-    summary =
-      report.removed.length === 0
-        ? 'Already clean'
-        : `Before: ${tags(before)} · After: ${tags(after)}${report.method === 'reencode' ? ' · re-encoded' : ''}`;
+    const exif = report.exif;
+    const exifTags = exif?.tagCount ?? 0;
+    const otherBlocks = report.removed.filter((r) => !r.name.startsWith('EXIF')).reduce((n, r) => n + (r.count ?? 1), 0);
+    const kept = report.kept.includes('Orientation') ? 1 : 0;
+    const removed = Math.max(0, exifTags + otherBlocks - kept);
+    summary = report.removed.length === 0 ? 'Nothing to remove.' : `Removed ${removed} ${removed === 1 ? 'tag' : 'tags'}.`;
+    if (report.method === 'reencode') summary += ' Re-encoded.';
 
-    const facts: string[] = [];
-    if (exif?.make || exif?.model) facts.push([exif.make, exif.model].filter(Boolean).join(' '));
-    if (exif?.dateTimeOriginal) facts.push(exif.dateTimeOriginal);
-    if (exif?.gps) facts.push(formatCoords(exif.gps.latitude, exif.gps.longitude));
-    for (const r of report.removed) facts.push(`${r.name}${r.count ? ` ×${r.count}` : ''}`);
-    details = facts.length ? `Removed: ${facts.join(' · ')}` : summary;
+    // Everything we know goes into the tooltip: what was inside, what was removed, what was kept.
+    const lines: string[] = [];
+    if (exif?.make || exif?.model) lines.push([exif.make, exif.model].filter(Boolean).join(' '));
+    if (exif?.lens) lines.push(exif.lens);
+    if (exif?.dateTimeOriginal) lines.push(exif.dateTimeOriginal);
+    if (exif?.software) lines.push(exif.software);
+    if (exif?.artist) lines.push(exif.artist);
+    if (exif?.copyright) lines.push(exif.copyright);
+    if (exif?.gps) lines.push(`GPS ${formatCoords(exif.gps.latitude, exif.gps.longitude)}`);
+    if (exif?.hasThumbnail) lines.push('embedded thumbnail');
+    for (const r of report.removed) {
+      lines.push(r.name === 'EXIF' && exifTags ? `EXIF (${exifTags} tags)` : r.name + (r.count ? ` ×${r.count}` : ''));
+    }
+    for (const k of report.kept) lines.push(`kept ${k.toLowerCase()}`);
+    details = lines.join('\n');
   }
 
   return (
@@ -251,36 +255,31 @@ function ResultRow({ item }: { item: Item }) {
 
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
         <div className="flex min-w-0 flex-1 basis-40 flex-col">
-          <div className="flex items-center gap-2">
-            {cleaned && url ? (
-              <a
-                href={url}
-                download={cleaned.name}
-                title="Download"
-                className="truncate font-semibold text-zinc-950 hover:underline dark:text-white"
-              >
-                {item.name}
-              </a>
-            ) : (
-              <Strong className="truncate">{item.name}</Strong>
-            )}
-            {item.status === 'working' && <Badge color="zinc">Working…</Badge>}
-            {item.status === 'error' && <Badge color="red">Failed</Badge>}
-            {exif?.gps && <Badge color="red">GPS</Badge>}
-          </div>
-          <Text className="truncate text-xs!" title={report ? details : item.error}>
-            {report ? summary : item.error}
+          {cleaned && url ? (
+            <a
+              href={url}
+              download={cleaned.name}
+              title="Download"
+              className="truncate font-semibold text-zinc-950 hover:underline dark:text-white"
+            >
+              {item.name}
+            </a>
+          ) : (
+            <Strong className="truncate">{item.name}</Strong>
+          )}
+          <Text className={`truncate text-xs! ${item.status === 'error' ? 'text-red-600! dark:text-red-400!' : ''}`} title={details}>
+            {summary}
           </Text>
         </div>
 
         {cleaned && url && (
-          <div className="flex shrink-0 gap-1">
-            <Button plain href={url} download={cleaned.name}>
+          <div className="flex shrink-0 gap-2">
+            <Button outline href={url} download={cleaned.name}>
               <DownloadIcon />
               Download
             </Button>
             {shareable && (
-              <Button plain onClick={() => share([cleaned])}>
+              <Button outline onClick={() => share([cleaned])}>
                 <ShareIcon />
                 Share
               </Button>
@@ -292,7 +291,6 @@ function ResultRow({ item }: { item: Item }) {
   );
 }
 
-/* Heroicons (MIT), inlined so the page needs no icon package. */
 function DownloadIcon({ className }: { className?: string }) {
   return (
     <svg data-slot="icon" viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden="true">

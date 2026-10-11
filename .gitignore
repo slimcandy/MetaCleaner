@@ -1,35 +1,5 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-
-/node_modules
-/functions/node_modules
-/functions/send-email.js
-/netlify/functions/node_modules
-/netlify/functions/send-email.js
-/.parcel-cache
-
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# production
-/build
-/dist
-/dev-dist
-
-# misc
+node_modules
+dist
+dev-dist
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Local Netlify folder
 .netlify

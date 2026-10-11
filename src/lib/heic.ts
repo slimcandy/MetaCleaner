@@ -6,8 +6,6 @@
  * structure, the HEVC/AV1 payload in `mdat` is never touched, and the Exif /
  * XMP items simply become empty. Orientation lives in the `irot` property,
  * not in EXIF, so photos stay upright.
- *
- * Approach and box walking adapted from picscrub (MIT, © 2026 Fabio Souto).
  */
 import { ascii, u32be, u16be } from './bytes';
 import { summarizeExif } from './exif';

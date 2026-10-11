@@ -3,8 +3,6 @@
  * comments, editor namespaces (Inkscape, Illustrator, Figma…), data-*
  * attributes and auto-generated UUID ids, and cleans raster images embedded
  * as base64 data URLs with the matching binary cleaner.
- *
- * Adapted from picscrub (MIT, © 2026 Fabio Souto).
  */
 import type { CleanOptions, CleanResult, RemovedBlock } from './types';
 

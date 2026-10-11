@@ -4,8 +4,6 @@
  * only the entries worth keeping (the new table is never larger), and the
  * values of removed entries, including whole EXIF/GPS sub-IFDs, are zeroed.
  * Strip and tile data are protected from zeroing even if pointers overlap.
- *
- * Adapted from picscrub (MIT, © 2026 Fabio Souto).
  */
 import { summarizeExif } from './exif';
 import { DEFAULT_OPTIONS, type CleanOptions, type CleanResult, type RemovedBlock } from './types';

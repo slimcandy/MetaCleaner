@@ -7,6 +7,12 @@
 }
 
 @layer base {
+  button,
+  summary,
+  [role='button'],
+  [role='switch'] {
+    cursor: pointer;
+  }
   html {
     -webkit-tap-highlight-color: transparent;
     padding-top: env(safe-area-inset-top);

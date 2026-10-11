@@ -3,15 +3,6 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Remove metadata from images locally in your browser. No uploads, no server, no dependencies for the cleaning engine.",
-  "keywords": [
-    "metadata removal",
-    "privacy",
-    "exif",
-    "remove metadata",
-    "pwa"
-  ],
-  "license": "MIT",
   "scripts": {
     "start": "vite",
     "dev": "vite",
