@@ -1,38 +1,73 @@
-# MetaCleaner
+# Meta Cleaner
 
-MetaCleaner is a lightweight web application that enables users to remove metadata from their images instantly and securely. The app is designed with a user-friendly interface and ensures the privacy of your images, as all processing occurs directly within your browser.
+Remove metadata from images in the browser. Nothing is uploaded, pixels are never re-encoded, and the cleaning engine has zero dependencies.
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/1007dc0e-bbf9-4a65-93dd-efeacdda8522/deploy-status)](https://app.netlify.com/sites/jpeg-exif/deploys)
+Live: <https://meta.avolkov.dev> (mirror: <https://admirable-puffpuff-e78254.netlify.app>). Installable as a PWA on iOS, iPadOS and macOS, works offline.
 
-## Features
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1007dc0e-bbf9-4a65-93dd-efeacdda8522/deploy-status)](https://app.netlify.com/sites/admirable-puffpuff-e78254/deploys)
 
-- Instant metadata removal
-- Supports drag and drop
-- All processing occurs in-browser
-- No image uploads or storage
+## Why
 
-## Getting Started
+Photos and documents carry more than pixels: GPS coordinates, camera serial numbers, your name, editing history, thumbnails of the uncropped original. ExifTool removes all of that, but it is a Perl program. This project shows that the part you actually need, "delete everything that is not the image", fits in a few hundred lines of plain TypeScript and runs anywhere a browser does.
 
-To get started with MetaCleaner, simply visit the website and follow these steps:
+## What it does
 
-1. Drag and drop an image into the designated area, or click the 'Choose File' button to select an image from your device.
-2. The metadata-free image will be returned immediately, without the need to submit any forms.
-3. Save the processed image to your device.
+| Format | Method | What is removed | What is kept |
+| ------ | ------ | --------------- | ------------ |
+| JPEG | Lossless, segment copy | EXIF, XMP, IPTC/Photoshop, comments, MPF previews, JUMBF/C2PA, every other APPn, trailers after EOI | JFIF, Adobe colour transform, ICC profile (optional), Orientation (optional) |
+| PNG | Lossless, chunk copy | tEXt, zTXt, iTXt (incl. XMP), eXIf, tIME, caBX, trailers | Colour chunks, iCCP (optional), Orientation (optional) |
+| WebP | Lossless, RIFF chunk copy | EXIF, XMP | ICCP (optional), animation, alpha |
+| GIF | Lossless, block copy | Comment extensions, XMP and other application extensions | Animation and looping |
+| Anything else | Canvas re-encode (fallback) | Everything | Pixels, re-compressed |
 
-## Privacy
+Before a block is removed it is read once so you can see what was inside: camera, date, software, author, GPS position, number of EXIF tags.
 
-MetaCleaner values your privacy. Uploaded images are never stored on our servers, and all metadata removal occurs directly within your browser. This ensures that your images remain secure and private.
+**Keep orientation** (default on) re-inserts a 26-byte EXIF block containing only the Orientation tag, so phone photos stay upright. Turn it off for a file with no EXIF at all.
+
+## How it is verified
+
+The real ExifTool is the judge. `npm test` cleans fixture files that were stuffed with metadata by ExifTool, then runs `exiftool -j -G` on the output and asserts that only structural groups remain (File, JPEG, PNG, RIFF, GIF, ICC_Profile) plus `EXIF:Orientation` when requested. It also runs `exiftool -validate` on every result and checks that cleaning is idempotent.
+
+```sh
+brew install exiftool   # or: apt install libimage-exiftool-perl
+npm ci
+npm test
+```
+
+Fixtures are regenerated with `scripts/make-fixtures.sh` (needs exiftool, sips, cwebp).
+
+## Privacy guarantees you can check
+
+- The site is served with `Content-Security-Policy: default-src 'self'; connect-src 'self'` (see `netlify.toml`). The page cannot talk to any other origin, even if a dependency wanted to.
+- Open DevTools → Network: after the page has loaded, no request is made while you process files.
+- No analytics, no cookies, no server-side code.
+
+## Development
+
+```sh
+npm install
+npm run dev      # Vite dev server
+npm run check    # typecheck + lint + tests (also runs on pre-commit)
+npm run build    # production build into dist/
+```
+
+Stack: Preact, Tailwind CSS v4, [Catalyst](https://tailwindcss.com/plus/ui-kit) components, Vite, vite-plugin-pwa. The engine in `src/lib/` imports nothing.
+
+## Project layout
+
+```
+src/lib/        cleaning engine (jpeg.ts, png.ts, webp.ts, gif.ts, exif.ts, zip.ts) + tests
+src/ui/         Catalyst UI kit components (Tailwind Plus licence, see below)
+src/App.tsx     the single page
+netlify.toml    build settings and security headers
+```
+
+## Licence
+
+Code is MIT, see [LICENCE](LICENCE).
+
+The components in `src/ui/` come from [Tailwind Plus](https://tailwindcss.com/plus) and are used under its licence, which permits open-source end products. They are part of this application and may not be extracted and redistributed as a UI kit.
 
 ## Contributing
 
-If you'd like to contribute to the MetaCleaner project, please feel free to submit a pull request or open an issue on our GitHub repository. We appreciate any feedback or suggestions for improvements.
-
-### Contributors
-
-<a href="https://github.com/slimcandy/removemetaonline/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=slimcandy/removemetaonline" />
-</a>
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+Issues and pull requests are welcome. Good first contributions: HEIC/AVIF without re-encoding (ISOBMFF boxes), TIFF, and a worker for very large batches.

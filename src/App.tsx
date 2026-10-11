@@ -1,162 +1,326 @@
-/* eslint-disable no-var */
-import { useId, useRef, useState } from 'react';
-import {
-  canIShareImage,
-  handleDragEvents,
-  handleFiles,
-  shareImage
-} from './utils/functions';
-import { CleanerResult } from './utils/types';
+import { useCallback, useEffect, useId, useRef, useState } from 'preact/hooks';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Description, Label } from './ui/fieldset';
+import { Heading } from './ui/heading';
+import { Switch, SwitchField, SwitchGroup } from './ui/switch';
+import { Strong, Text, TextLink } from './ui/text';
+import { cleanFile, type CleanOptions, type CleanReport } from './lib';
+import { formatBytes, formatCoords } from './format';
 
-function App(): JSX.Element {
-  const fileId = useId();
-  const fileInput = useRef<HTMLInputElement>(null);
-  const [cleanerResults, setCleanerResults] = useState<CleanerResult[]>([]);
+interface Item {
+  id: string;
+  name: string;
+  status: 'working' | 'done' | 'error';
+  original: File;
+  cleaned?: File;
+  url?: string;
+  report?: CleanReport;
+  error?: string;
+}
+type DoneItem = Item & { cleaned: File; url: string; report: CleanReport };
 
-  async function handleDrop(
-    event: React.DragEvent<HTMLDivElement>
-  ): Promise<void> {
-    handleDragEvents(event);
-    const results = await handleFiles(event.dataTransfer.files);
-    setCleanerResults(results);
+const canShareFiles = (files: File[]): boolean =>
+  typeof navigator !== 'undefined' && 'canShare' in navigator && navigator.canShare({ files });
+
+async function share(files: File[]): Promise<void> {
+  try {
+    await navigator.share({ files });
+  } catch {
+    /* user cancelled */
   }
+}
 
-  async function handleFilePickerChange(
-    event: React.ChangeEvent<HTMLInputElement>
-  ): Promise<void> {
-    if (event.target.files != null) {
-      const results = await handleFiles(event.target.files);
-      setCleanerResults(results);
-    }
-  }
+export function App() {
+  const inputId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [items, setItems] = useState<Item[]>([]);
+  const [dragging, setDragging] = useState(false);
+  const [options, setOptions] = useState<Required<CleanOptions>>({
+    keepOrientation: true,
+    keepColorProfile: true
+  });
 
-  function handleFormClick(): void {
-    fileInput.current?.click();
-  }
+  // Free object URLs when items disappear.
+  const urlsRef = useRef(new Set<string>());
+  useEffect(() => {
+    const live = new Set(items.map((i) => i.url).filter((u): u is string => !!u));
+    for (const u of urlsRef.current) if (!live.has(u)) URL.revokeObjectURL(u);
+    urlsRef.current = live;
+  }, [items]);
+
+  const process = useCallback(
+    async (files: FileList | File[]) => {
+      const list = Array.from(files).filter((f) => f.size > 0);
+      if (list.length === 0) return;
+      const fresh: Item[] = list.map((file) => ({
+        id: crypto.randomUUID(),
+        name: file.name,
+        status: 'working',
+        original: file
+      }));
+      setItems((prev) => [...fresh, ...prev]);
+
+      for (const item of fresh) {
+        try {
+          const { file, report } = await cleanFile(item.original, options);
+          const url = URL.createObjectURL(file);
+          setItems((prev) =>
+            prev.map((i) => (i.id === item.id ? { ...i, status: 'done', cleaned: file, url, report } : i))
+          );
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Could not process this file';
+          setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, status: 'error', error: message } : i)));
+        }
+      }
+    },
+    [options]
+  );
+
+  const onDrop = (event: DragEvent) => {
+    event.preventDefault();
+    setDragging(false);
+    if (event.dataTransfer?.files) void process(event.dataTransfer.files);
+  };
+
+  const onPick = (event: Event) => {
+    const input = event.currentTarget as HTMLInputElement;
+    if (input.files) void process(input.files);
+    input.value = '';
+  };
+
+  const done = items.filter((i): i is DoneItem => i.status === 'done');
+
+  const downloadAll = async () => {
+    const { createZip } = await import('./lib/zip');
+    const entries = await Promise.all(
+      done.map(async (i) => ({ name: i.cleaned.name, data: new Uint8Array(await i.cleaned.arrayBuffer()) }))
+    );
+    const blob = new Blob([createZip(entries) as BlobPart], { type: 'application/zip' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cleaned-images.zip';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 10_000);
+  };
 
   return (
-    <div className="prose mx-auto sm:rounded-lg sm:shadow-2xl bg-white sm:border-2 sm:border-slate-300 w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl">
-      <ol className="list-inside list-decimal p-0">
-        <li className="border-b-2 border-slate-300 p-1 sm:p-2 md:px-4 w-full text-base text-slate-500">
-          Pick an image:
-        </li>
-        <form className="py-2 sm:py-3 md:py-4 px-4 sm:px-5 md:px-6">
-          <div
-            onDragEnter={handleDragEvents}
-            onDragOver={handleDragEvents}
-            onDragLeave={handleDragEvents}
-            onDrop={handleDrop}
-            onClick={handleFormClick}
-            className="border-2 border-dashed border-slate-300 rounded-lg px-2 sm:px-4 md:px-6 py-3 sm:py-5 md:py-7 w-full text-center cursor-pointer hover:border-slate-400 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent hover:shadow-xl hover:bg-slate-100 active:bg-slate-200 active:shadow-none active:border-transparent select-none"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="mx-auto h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 text-slate-500"
-              viewBox="0 0 16 16"
-            >
-              <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
-              <path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2zM14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1zM2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10z" />
-            </svg>
-            <h3 className="sm:mt-1 md:mt-2 text-base font-medium text-slate-900">
-              Drag and drop your image here
-            </h3>
-            <ul className="sm:mt-1 text-xs text-slate-500 p-0 text-left list-inside list-disc">
-              <li className="p-0">No need to hit submit.</li>
-              <li className="p-0">
-                Instantly get your metadata-free images, right in your browser.
-              </li>
-              <li className="p-0">
-                We value your privacy — your images are never stored on our
-                servers.
-              </li>
-            </ul>
+    <main className="mx-auto flex h-dvh w-full max-w-2xl flex-col gap-4 px-4 py-4 sm:py-8">
+      <header className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+        <Heading>Meta Cleaner</Heading>
+        <Text>Removes meta data from images.</Text>
+      </header>
+
+      <div
+        role="button"
+        tabIndex={0}
+        aria-controls={inputId}
+        onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()}
+        onDragEnter={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragOver={(e) => e.preventDefault()}
+        onDragLeave={() => setDragging(false)}
+        onDrop={onDrop}
+        className={[
+          'flex shrink-0 cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed px-4 py-6 text-center select-none transition-colors',
+          'focus:outline-2 focus:outline-offset-2 focus:outline-blue-500',
+          dragging
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10'
+            : 'border-zinc-300 bg-white hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-500'
+        ].join(' ')}
+      >
+        <PhotoIcon className="size-8 text-zinc-400" />
+        <Strong>Drop images here, or tap to choose</Strong>
+        <Text className="text-sm!">JPEG, PNG, WebP, GIF — cleaned without re-encoding.</Text>
+        <input ref={inputRef} id={inputId} type="file" accept="image/*" multiple className="sr-only" onChange={onPick} />
+      </div>
+
+      <ul className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
+        {items.map((item) => (
+          <ResultRow key={item.id} item={item} />
+        ))}
+      </ul>
+
+      <footer className="flex shrink-0 flex-col gap-3">
+        {items.length > 1 && (
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Text className="text-sm!">
+              <Strong>{done.length}</Strong> of {items.length} ready
+            </Text>
+            <div className="flex gap-2">
+              {done.length > 1 && (
+                <Button outline onClick={downloadAll}>
+                  <DownloadIcon />
+                  All (.zip)
+                </Button>
+              )}
+              {done.length > 1 && canShareFiles(done.map((i) => i.cleaned)) && (
+                <Button outline onClick={() => share(done.map((i) => i.cleaned))}>
+                  <ShareIcon />
+                  Share all
+                </Button>
+              )}
+              <Button plain onClick={() => setItems([])}>
+                <XIcon />
+                Clear
+              </Button>
+            </div>
           </div>
-          <label htmlFor={fileId} className="sr-only">
-            Or browse
-          </label>
-          <input
-            className="sr-only"
-            id={fileId}
-            type="file"
-            accept="image/*"
-            ref={fileInput}
-            onChange={handleFilePickerChange}
-            placeholder="Select Image"
-            multiple
-            hidden
-          />
-          <button type="submit" className="sr-only">
-            Send
-          </button>
-        </form>
-        <li className="border-b-2 border-slate-300 p-1 sm:p-2 md:px-4 w-full text-base text-slate-500">
-          Tap the image name to download:
-        </li>
-        {cleanerResults.length === 0 && (
-          <p className="p-4 sm:p-6 md:p-8 text-center text-base font-medium text-slate-900">
-            No images to show.
-          </p>
         )}
 
-        <ul className="w-full list-disc list-inside">
-          {cleanerResults.map(function drawResults(result) {
-            return (
-              <li
-                key={result.file.name}
-                className="flex items-center gap-x-2.5"
-              >
-                {canIShareImage(result.file) && (
-                  <button
-                    className="mr-2 relative cursor-pointer"
-                    onClick={() => shareImage(result.file)}
-                    title="Share image"
-                  >
-                    <img
-                      src={result.downloadLink}
-                      alt={result.file.name}
-                      className="h-8 sm:h-10 md:h-12 lg:h-16 w-8 sm:w-10 md:w-12 lg:w-16 object-cover object-center rounded m-0"
-                    />
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="h-full w-full text-slate-100 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-1 sm:p-2 md:p-3 lg:p-4
-                    
-                    bg-slate-600 bg-opacity-40 hover:bg-opacity-95 shadow hover:shadow-lg duration-300 ease-in-out rounded"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1h-2z"
-                      />
-                      <path
-                        fillRule="evenodd"
-                        d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708l3-3z"
-                      />
-                    </svg>
-                  </button>
-                )}
-                <a
-                  href={result.downloadLink}
-                  download={result.file.name}
-                  className="text-blue-700 hover:text-blue-400 flex items-center gap-x-2.5 cursor-pointer"
-                  title={`Download "${result.file.name}" | ${Math.ceil(
-                    result.file.size / 1000
-                  )}Kb.`}
-                >
-                  {result.file.name}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </ol>
-    </div>
+        <details className="group rounded-xl bg-white ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:ring-white/10">
+          <summary className="cursor-pointer px-4 py-2 text-sm font-medium text-zinc-600 select-none dark:text-zinc-400">
+            Settings
+          </summary>
+          <SwitchGroup className="px-4 pt-1 pb-4">
+            <SwitchField>
+              <Label>Keep orientation</Label>
+              <Description>A single Orientation tag is kept so rotated phone photos stay upright.</Description>
+              <Switch
+                checked={options.keepOrientation}
+                onChange={(v: boolean) => setOptions((o) => ({ ...o, keepOrientation: v }))}
+              />
+            </SwitchField>
+            <SwitchField>
+              <Label>Keep colour profile</Label>
+              <Description>ICC profiles carry no personal data but keep colours accurate.</Description>
+              <Switch
+                checked={options.keepColorProfile}
+                onChange={(v: boolean) => setOptions((o) => ({ ...o, keepColorProfile: v }))}
+              />
+            </SwitchField>
+          </SwitchGroup>
+        </details>
+
+        <Text className="text-xs!">
+          Everything happens on this device, nothing is uploaded.{' '}
+          <TextLink href="https://github.com/slimcandy/MetaCleaner">Open source</TextLink>.
+        </Text>
+      </footer>
+    </main>
   );
 }
 
-export default App;
+function ResultRow({ item }: { item: Item }) {
+  const { report, cleaned, url } = item;
+  const exif = report?.exif;
+  const shareable = cleaned ? canShareFiles([cleaned]) : false;
+
+  let summary = '';
+  let details = '';
+  if (report) {
+    const removed: string[] = [];
+    if (exif) removed.push(exif.tagCount ? `EXIF (${exif.tagCount} tags)` : 'EXIF');
+    if (exif?.gps) removed.push('GPS');
+    if (report.hasXmp) removed.push('XMP');
+    if (report.hasIptc) removed.push('IPTC');
+    for (const r of report.removed) {
+      if (!/^(EXIF|XMP|IPTC)/.test(r.name)) removed.push(r.name.replace(/ \(.*\)$/, ''));
+    }
+    const what =
+      report.removed.length === 0
+        ? 'already clean'
+        : `${[...new Set(removed)].join(', ')} removed${report.method === 'reencode' ? ' (re-encoded)' : ''}`;
+    summary = `Before ${formatBytes(report.bytesBefore)} → After ${formatBytes(report.bytesAfter)} · ${what}`;
+    if (report.kept.length) summary += ` · kept ${report.kept.join(', ').toLowerCase()}`;
+
+    const facts: string[] = [];
+    if (exif?.make || exif?.model) facts.push([exif.make, exif.model].filter(Boolean).join(' '));
+    if (exif?.lens) facts.push(exif.lens);
+    if (exif?.dateTimeOriginal) facts.push(exif.dateTimeOriginal);
+    if (exif?.software) facts.push(exif.software);
+    if (exif?.artist) facts.push(exif.artist);
+    if (exif?.gps) facts.push(formatCoords(exif.gps.latitude, exif.gps.longitude));
+    details = facts.length ? `Was inside: ${facts.join(' · ')}` : summary;
+  }
+
+  return (
+    <li className="flex shrink-0 items-center gap-3 rounded-xl bg-white p-2 ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:ring-white/10">
+      <button
+        type="button"
+        onClick={() => cleaned && shareable && share([cleaned])}
+        disabled={!shareable}
+        title={shareable ? 'Share' : undefined}
+        className="group relative size-12 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800"
+      >
+        {url && <img src={url} alt="" className="size-full object-cover" />}
+        {shareable && (
+          <span className="absolute inset-0 flex items-center justify-center bg-zinc-950/60 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+            <ShareIcon className="size-5" />
+          </span>
+        )}
+      </button>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-center gap-2">
+          {cleaned && url ? (
+            <a
+              href={url}
+              download={cleaned.name}
+              title="Download"
+              className="truncate font-semibold text-zinc-950 hover:underline dark:text-white"
+            >
+              {item.name}
+            </a>
+          ) : (
+            <Strong className="truncate">{item.name}</Strong>
+          )}
+          {item.status === 'working' && <Badge color="zinc">Working…</Badge>}
+          {item.status === 'error' && <Badge color="red">Failed</Badge>}
+          {exif?.gps && <Badge color="red">GPS</Badge>}
+        </div>
+        <Text className="line-clamp-2 text-xs! sm:truncate" title={report ? details : item.error}>
+          {report ? summary : item.error}
+        </Text>
+      </div>
+
+      {cleaned && url && (
+        <div className="flex shrink-0 gap-1">
+          <Button plain href={url} download={cleaned.name} aria-label="Download" title="Download">
+            <DownloadIcon />
+          </Button>
+          {shareable && (
+            <Button plain onClick={() => share([cleaned])} aria-label="Share" title="Share">
+              <ShareIcon />
+            </Button>
+          )}
+        </div>
+      )}
+    </li>
+  );
+}
+
+/* Heroicons (MIT), inlined so the page needs no icon package. */
+function DownloadIcon({ className }: { className?: string }) {
+  return (
+    <svg data-slot="icon" viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
+      <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+    </svg>
+  );
+}
+function ShareIcon({ className }: { className?: string }) {
+  return (
+    <svg data-slot="icon" viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M13.75 7h-3v5.296l1.943-2.048a.75.75 0 0 1 1.114 1.004l-3.25 3.5a.75.75 0 0 1-1.114 0l-3.25-3.5a.75.75 0 1 1 1.114-1.004l1.943 2.048V7h1.5V1.75a.75.75 0 0 0-1.5 0V7h-3A2.25 2.25 0 0 0 4 9.25v7.5A2.25 2.25 0 0 0 6.25 19h7.5A2.25 2.25 0 0 0 16 16.75v-7.5A2.25 2.25 0 0 0 13.75 7Z" />
+    </svg>
+  );
+}
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg data-slot="icon" viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+    </svg>
+  );
+}
+function PhotoIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" className={className} aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Zm10.5-11.25h.008v.008h-.008V9.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+    </svg>
+  );
+}

@@ -1,5 +1,4 @@
-import { createRoot } from 'react-dom/client';
-import App from './App';
+import { render } from 'preact';
+import { App } from './App';
 
-const container: HTMLElement = document.getElementById('app') as HTMLElement;
-createRoot(container).render(<App />);
+render(<App />, document.getElementById('app')!);

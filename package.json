@@ -1,57 +1,51 @@
 {
   "name": "metacleaner",
-  "version": "1.0.0",
-  "description": "Easily remove metadata from your images with our online tool, MetaCleaner. Preserve your privacy by stripping out EXIF data from your photos in seconds.",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Remove metadata from images locally in your browser. No uploads, no server, no dependencies for the cleaning engine.",
   "keywords": [
     "metadata removal",
-    "image optimization",
     "privacy",
-    "image processing",
-    "exif data",
-    "remove metadata"
+    "exif",
+    "remove metadata",
+    "pwa"
   ],
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/typography": "^0.5.9",
-    "@types/react": "^18.0.37",
-    "@types/react-dom": "^18.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.59.1",
-    "@typescript-eslint/parser": "^5.59.1",
-    "@vitejs/plugin-react": "^4.0.0",
-    "autoprefixer": "^10.4.14",
-    "eslint": "^8.39.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.3.4",
-    "husky": "^8.0.0",
-    "postcss": "^8.4.23",
-    "prettier": "2.8.8",
-    "process": "^0.11.10",
-    "tailwindcss": "^3.3.1",
-    "typescript": "^5.0.4",
-    "vite": "^4.3.2",
-    "vite-plugin-pwa": "^0.14.7"
-  },
+  "license": "MIT",
   "scripts": {
     "start": "vite",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "prepare": "husky install",
-    "format": "prettier --write src/**/*.{ts,tsx}",
-    "lint": "eslint --fix src/**/*.{ts,tsx}",
-    "test": "npm run format && npm run lint"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{js,ts,json,md}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "prepare": "husky"
   },
-  "author": "@slimcandy",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/slimcandy/removemetaonline.git"
+  "dependencies": {
+    "@headlessui/react": "^2.2.10",
+    "clsx": "^2.1.1",
+    "preact": "^11.0.1"
   },
-  "bugs": {
-    "url": "https://github.com/slimcandy/removemetaonline/issues"
-  },
-  "homepage": "https://metacleaner.js.garden"
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@preact/preset-vite": "^2.10.6",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.0.3"
+  }
 }
