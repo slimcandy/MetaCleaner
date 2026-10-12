@@ -25,7 +25,6 @@
   @supports (font: -apple-system-body) and (-webkit-touch-callout: none) {
     html {
       font: -apple-system-body;
-      font-family: var(--font-sans);
       line-height: 1.5;
     }
   }
