@@ -20,4 +20,13 @@
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
   }
+  /* Dynamic Type: on iOS the root size follows the system text size setting (17px by default),
+     and every rem-based size scales with it. -webkit-touch-callout keeps macOS Safari out. */
+  @supports (font: -apple-system-body) and (-webkit-touch-callout: none) {
+    html {
+      font: -apple-system-body;
+      font-family: var(--font-sans);
+      line-height: 1.5;
+    }
+  }
 }
