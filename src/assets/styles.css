@@ -29,3 +29,29 @@
     }
   }
 }
+
+/* OS settings. Unlayered on purpose: these must win over the utility classes. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0s !important;
+    animation: none !important;
+  }
+}
+@media (prefers-contrast: more) {
+  [data-slot='text'],
+  [data-slot='description'],
+  summary,
+  input[type='file'] {
+    color: var(--color-zinc-800);
+  }
+  @media (prefers-color-scheme: dark) {
+    [data-slot='text'],
+    [data-slot='description'],
+    summary,
+    input[type='file'] {
+      color: var(--color-zinc-200);
+    }
+  }
+}
