@@ -2,30 +2,53 @@
   "name": "metacleaner",
   "version": "2.0.0",
   "private": true,
+  "description": "Removes EXIF, GPS, XMP, IPTC and other metadata from photos in the browser. Nothing is uploaded, pixels are never re-encoded.",
+  "keywords": [
+    "exif",
+    "metadata",
+    "privacy",
+    "image-processing",
+    "jpeg",
+    "png",
+    "webp",
+    "heic",
+    "pwa",
+    "preact"
+  ],
+  "homepage": "https://meta.avolkov.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slimcandy/MetaCleaner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/slimcandy/MetaCleaner/issues"
+  },
+  "author": "Aleksei Volkov",
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "start": "vite",
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc --noEmit && vite build",
+    "start": "vite preview",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "check": "npm run typecheck && npm run test"
+    "check": "tsc --noEmit && vitest run"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.10",
-    "clsx": "^2.1.1",
-    "preact": "^11.0.1"
+    "@headlessui/react": "2.2.10",
+    "clsx": "2.1.1",
+    "preact": "11.0.1"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.10.6",
-    "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^26.6.5",
-    "tailwindcss": "^4.3.3",
-    "typescript": "^6.0.3",
-    "vite": "^8.3.4",
-    "vite-plugin-pwa": "^2.0.0",
-    "vitest": "^5.0.3"
+    "@preact/preset-vite": "2.10.6",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "26.6.5",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "vite": "8.3.4",
+    "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.0.3"
   }
 }
