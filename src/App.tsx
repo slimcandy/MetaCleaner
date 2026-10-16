@@ -120,12 +120,13 @@ export function App() {
     <main className="@container mx-auto hyphens-auto flex min-h-full w-full max-w-2xl flex-col gap-4 px-4 py-4 sm:py-8">
       <header className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
         <Heading>Meta Cleaner</Heading>
-        <Text>Removes meta data from images.</Text>
+        <Text>Removes metadata from images.</Text>
       </header>
 
       <div className="flex flex-col gap-1.5">
         <input
           type="file"
+          aria-label="Choose images"
           accept={ACCEPT}
           multiple
           onChange={onPick}
